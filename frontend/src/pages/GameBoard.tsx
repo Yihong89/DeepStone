@@ -12,6 +12,23 @@ interface Selection {
   source: GameCard;
 }
 
+function ManaCrystals({ available, total }: { available: number; total: number }) {
+  const crystals = Math.max(total, available);
+  return (
+    <div className="flex items-center gap-2">
+      <div className="flex gap-1">
+        {Array.from({ length: crystals }, (_, i) => (
+          <span
+            key={i}
+            className={`h-4 w-4 rounded-full ${i < available ? "bg-amber-400" : "bg-slate-600"}`}
+          />
+        ))}
+      </div>
+      <span className="text-xs font-semibold text-slate-300">{available}/{total}</span>
+    </div>
+  );
+}
+
 export default function GameBoard() {
   const { gameId } = useParams();
   const token = useAuth((s) => s.token);
@@ -127,7 +144,10 @@ export default function GameBoard() {
       <section className="space-y-2">
         <div className="flex items-center justify-between text-sm text-slate-300">
           <span>{opp!.hero.name ?? "Opponent"}</span>
-          <span>Deck: {opp!.deck_count} · Hand: {opp!.hand.length} · Mana {opp!.mana}/{opp!.max_mana}</span>
+          <span>Deck: {opp!.deck_count} · Hand: {opp!.hand.length}</span>
+        </div>
+        <div className="flex justify-center">
+          <ManaCrystals available={opp!.mana} total={opp!.max_mana} />
         </div>
         <div className="flex gap-2">
           {opp!.field.map((m) => (
@@ -166,10 +186,8 @@ export default function GameBoard() {
         <div className="flex items-center justify-center gap-2">
           <CardView gameCard={hero!} />
         </div>
-        <div className="flex justify-center gap-3">
-          {Array.from({ length: me!.max_mana }, (_, i) => (
-            <span key={i} className={`h-5 w-5 rounded-full ${i < me!.mana ? "bg-amber-400" : "bg-slate-600"}`} />
-          ))}
+        <div className="flex justify-center">
+          <ManaCrystals available={me!.mana} total={me!.max_mana} />
         </div>
         <div className="flex gap-2">
           {me!.field.map((m) => (

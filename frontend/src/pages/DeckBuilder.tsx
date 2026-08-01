@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { apiFetch } from "../api/client";
 import type { CardMeta, Deck } from "../api/types";
+import CardView from "../components/CardView";
 
 const CLASSES = [
   "MAGE", "WARRIOR", "SHAMAN", "ROGUE", "PALADIN", "HUNTER",
@@ -100,12 +101,10 @@ export default function DeckBuilder() {
               key={c.id}
               onClick={() => add(c.id)}
               disabled={cards.length >= 30}
-              className="rounded border border-slate-700 bg-slate-800 p-2 text-left text-sm hover:border-amber-500 disabled:opacity-40"
+              className="disabled:opacity-40"
+              title={`${c.name} — ${c.text ?? ""}`}
             >
-              <div className="font-semibold">{c.name}</div>
-              <div className="text-slate-400">
-                {c.cost} mana · {c.attack ?? "–"}/{c.health ?? "–"}
-              </div>
+              <CardView card={c} size="sm" />
             </button>
           ))}
         </div>
@@ -113,12 +112,22 @@ export default function DeckBuilder() {
       <div className="space-y-3">
         <h3 className="font-bold">Your deck ({cards.length}/30)</h3>
         <div className="max-h-96 space-y-1 overflow-y-auto">
-          {cards.map((cid, i) => (
-            <div key={i} className="flex items-center justify-between rounded border border-slate-700 bg-slate-800 p-2">
-              <span>{poolById[cid]?.name ?? cid}</span>
-              <button className="text-red-400" onClick={() => removeAt(i)}>×</button>
-            </div>
-          ))}
+          {cards.map((cid, i) => {
+            const c = poolById[cid];
+            return (
+              <div key={i} className="flex items-center justify-between rounded border border-slate-700 bg-slate-800 p-2">
+                <div>
+                  <div className="font-semibold">{c?.name ?? cid}</div>
+                  {c && (
+                    <div className="text-xs text-slate-500">
+                      {c.type} · {c.cost} mana{c.attack != null ? ` · ${c.attack}/${c.health}` : ""}
+                    </div>
+                  )}
+                </div>
+                <button className="text-red-400" onClick={() => removeAt(i)}>×</button>
+              </div>
+            );
+          })}
         </div>
         {errors.length > 0 && (
           <ul className="text-sm text-red-400">{errors.map((e, i) => <li key={i}>{e}</li>)}</ul>
