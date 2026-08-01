@@ -160,6 +160,7 @@ class GameSession:
                 choose = by_id.get(action["choose"]) if action.get("choose") else None
                 game.play_card(card, target, action.get("index", 0), choose)
                 desc = f"played {card.data.name}"
+                self._event({"kind": "play", "card": card.entity_id})
             elif kind == "attack":
                 src = by_id.get(action["source"])
                 tgt = by_id.get(action["target"])
@@ -175,6 +176,7 @@ class GameSession:
                 # the mana cost and enforces the once-per-turn limit.
                 hp.use(target)
                 desc = f"used {hp.data.name}"
+                self._event({"kind": "hero_power", "player": player_index})
             elif kind == "concede":
                 game.action_block(player, [Concede()], BlockType.PLAY)
                 desc = "conceded"
@@ -265,6 +267,7 @@ class GameSession:
                 ent = by_id.get(eid)
                 if ent is not None and getattr(ent, "data", None):
                     self._log_message(f"{ent.data.name} was destroyed")
+                    self._event({"kind": "death", "entity": eid})
             self._broadcast()
         # Game over
         result = serialize(game, 0)["result"]
