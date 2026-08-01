@@ -13,6 +13,14 @@ interface Selection {
   source: GameCard;
 }
 
+function SecretMarker() {
+  return (
+    <div className="flex h-20 w-14 items-center justify-center rounded border-2 border-purple-400 bg-gradient-to-b from-purple-800 to-purple-950 text-2xl font-black text-purple-200 shadow">
+      ?
+    </div>
+  );
+}
+
 function ManaCrystals({ available, total }: { available: number; total: number }) {
   const crystals = Math.max(total, available);
   return (
@@ -172,6 +180,7 @@ export default function GameBoard() {
             onClick={() => onOppCharacter(opp!.hero)}
             selected={targetIds.has(opp!.hero.entity_id)}
           />
+          {opp!.secrets.map((s) => <SecretMarker key={s.entity_id} />)}
         </div>
       </section>
 
@@ -192,6 +201,7 @@ export default function GameBoard() {
       <section className="space-y-2">
         <div className="flex items-center justify-center gap-2">
           <HeroView hero={hero!} />
+          {me!.secrets.map((s) => <CardView key={s.entity_id} gameCard={s} size="xs" />)}
         </div>
         <div className="flex justify-center">
           <ManaCrystals available={me!.mana} total={me!.max_mana} />
