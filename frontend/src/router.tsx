@@ -4,6 +4,7 @@ import App from "./App";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Lobby from "./pages/Lobby";
+import Gallery from "./pages/Gallery";
 import { useAuth } from "./store/auth";
 
 function RequireAuth({ children }: { children: ReactNode }) {
@@ -20,6 +21,7 @@ export const router = createBrowserRouter([
       { index: true, element: <RequireAuth><Lobby /></RequireAuth> },
       { path: "login", element: <Login /> },
       { path: "register", element: <Register /> },
+      { path: "cards", element: <RequireAuth><Gallery /></RequireAuth> },
     ],
   },
 ]);
