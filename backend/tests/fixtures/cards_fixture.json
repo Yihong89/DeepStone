@@ -1,0 +1,6 @@
+[
+  {"id": "CS2_029", "name": "Fireball", "text": "Deal $6 damage.", "cost": 4, "attack": null, "health": null, "type": "SPELL", "cardClass": "MAGE", "rarity": "COMMON", "set": "CORE", "collectible": true},
+  {"id": "CS2_200", "name": "Boulderfist Ogre", "text": "", "cost": 6, "attack": 6, "health": 7, "type": "MINION", "cardClass": "NEUTRAL", "rarity": "FREE", "set": "CORE", "collectible": true},
+  {"id": "CS2_182", "name": "Chillwind Yeti", "text": "", "cost": 4, "attack": 4, "health": 5, "type": "MINION", "cardClass": "NEUTRAL", "rarity": "FREE", "set": "CORE", "collectible": true},
+  {"id": "EX1_279", "name": "Pyroblast", "text": "Deal $10 damage.", "cost": 10, "attack": null, "health": null, "type": "SPELL", "cardClass": "MAGE", "rarity": "EPIC", "set": "EXPERT1", "collectible": true}
+]
