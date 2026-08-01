@@ -1,0 +1,23 @@
+# Keep the Docker build context small. Card art/audio are large, gitignored
+# assets that must NOT be baked into images — they're bind-mounted at runtime
+# via deploy/docker-compose.override.yml.
+.git
+.githooks
+.worktrees
+.claude
+docs
+*.md
+**/__pycache__/
+*.pyc
+backend/.venv
+backend/.pytest_cache
+backend/*.db
+backend/*.db-*
+backend/cards.json
+backend/images
+backend/audio
+frontend/node_modules
+frontend/dist
+frontend/.vite
+*.tsbuildinfo
+.DS_Store

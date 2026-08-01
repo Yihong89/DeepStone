@@ -9,19 +9,18 @@ services:
       DEEPCHARD_ADMIN_USER: ${DEEPCHARD_ADMIN_USER:-admin}
       DEEPCHARD_ADMIN_PASS: ${DEEPCHARD_ADMIN_PASS:-}
       CARDS_JSON_PATH: /srv/backend/cards.json
+      FRONTEND_DIST_DIR: /srv/frontend/dist
     volumes:
+      # Persistent DB (named volume)
       - deepcards-data:/data
-    expose:
-      - "8000"
-
-  frontend:
-    build:
-      context: ..
-      dockerfile: deploy/frontend.Dockerfile
+      # Private assets + SPA build (gitignored / host-built) — bind mounts so
+      # they aren't baked into the image.
+      - ../backend/images:/srv/backend/images
+      - ../backend/audio:/srv/backend/audio
+      - ../frontend/dist:/srv/frontend/dist
     ports:
-      - "8080:8080"
-    depends_on:
-      - backend
+      - "8000:8000"
+    restart: unless-stopped
 
 volumes:
   deepcards-data:
