@@ -77,6 +77,7 @@ export default function GameBoard() {
   const token = useAuth((s) => s.token);
   const state = useGame((s) => s.state);
   const pending = useGame((s) => s.pending);
+  const pendingPlayer = useGame((s) => s.pendingPlayer);
   const mulliganCards = useGame((s) => s.mulliganCards);
   const connect = useGame((s) => s.connect);
   const send = useGame((s) => s.send);
@@ -89,9 +90,11 @@ export default function GameBoard() {
     return () => useGame.getState().reset();
   }, [gameId, token, connect]);
 
-  const me = state?.players[0];
-  const opp = state?.players[1];
-  const yourTurn = state ? state.current_player === 0 && !state.ended : false;
+  // In PvP each browser is a different player index — render from my own view.
+  const myIndex = useGame((s) => s.myIndex) ?? 0;
+  const me = state?.players[myIndex];
+  const opp = state?.players[myIndex === 1 ? 0 : 1];
+  const yourTurn = state ? state.current_player === myIndex && !state.ended : false;
   const hero = me?.hero;
   const heroPower = me?.hero_power;
 
@@ -332,9 +335,9 @@ export default function GameBoard() {
         </div>
       </aside>
 
-      {pending === "choice" && <ChoiceDialog />}
+      {pending === "choice" && pendingPlayer === myIndex && <ChoiceDialog />}
 
-      {pending === "mulligan" && (
+      {pending === "mulligan" && pendingPlayer === myIndex && (
         <div className="fixed inset-0 z-20 bg-black/70 p-8">
           <h3 className="text-center text-xl font-bold text-amber-400">
             Mulligan — click cards to swap, or keep all
