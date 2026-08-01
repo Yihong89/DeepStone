@@ -76,7 +76,7 @@ Fireplace is synchronous and blocking: a `Controller` decides each action. We wr
 ### 3.3 Data model (SQLite)
 - `users`: id, username (unique), email (unique), password_hash, role (`user`|`admin`), is_active, created_at.
 - `decks`: id, user_id, name, hero_class, card_ids (JSON array of Fireplace card IDs), created_at, updated_at.
-- `matches`: id, game_id, player1_id, player2_id (nullable → AI), winner_id (nullable → draw), hero_classes, deck1_ids, deck2_ids, started_at, ended_at, status.
+- `matches`: id, game_id, player1_id, player2_id (nullable → AI), winner_id (nullable → draw), hero_classes, deck1_id (nullable), deck2_id (nullable), started_at, ended_at, status. Deck *contents* are snapshotted at match start into the match record so history is readable even if the deck is later edited.
 
 Game *state* is in-memory per session; only match outcomes/history are persisted.
 
@@ -115,7 +115,7 @@ Pages:
 State: server snapshots applied through a client-side reducer (Zustand). Styling: Tailwind CSS.
 
 ### 3.8 PvE bot (minimal)
-- v1 ships one simple heuristic `Controller`: play highest-cost playable card, attack/trade sensibly, use hero power when idle. Enough for a functional PvE mode. Reuses the same NetworkController bridge shape (bot supplies choices directly in-thread).
+- v1 ships one simple heuristic `Controller`: play highest-cost playable card, attack/trade sensibly, use hero power when idle. Enough for a functional PvE mode. The bot is an in-process controller (no WebSocket) that supplies engine choices directly in the game thread — the same decision interface a human's NetworkController implements, just fed by heuristics instead of a network round-trip.
 
 ### 3.9 Admin
 - List users, toggle `is_active`, reset password. (Later: match logs, card-art upload.)
