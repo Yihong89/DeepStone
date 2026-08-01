@@ -4,6 +4,34 @@ import { apiFetch } from "../api/client";
 import type { CardMeta, Deck } from "../api/types";
 import CardView from "../components/CardView";
 
+function ManaCurve({ counts, poolById }: { counts: Record<string, number>; poolById: Record<string, CardMeta> }) {
+  const buckets = useMemo(() => {
+    const arr = new Array(8).fill(0); // 0..6, 7+
+    for (const cid of Object.keys(counts)) {
+      const cost = poolById[cid]?.cost ?? 0;
+      arr[cost >= 7 ? 7 : cost] += counts[cid];
+    }
+    return arr as number[];
+  }, [counts, poolById]);
+  const max = Math.max(...buckets, 1);
+  return (
+    <div>
+      <h3 className="font-bold">Mana curve</h3>
+      <div className="space-y-1">
+        {buckets.map((n, i) => (
+          <div key={i} className="flex items-center gap-2 text-xs">
+            <span className="w-6 text-right text-slate-400">{i === 7 ? "7+" : i}</span>
+            <div className="h-3.5 flex-1 overflow-hidden rounded bg-slate-700">
+              <div className="h-full bg-amber-500" style={{ width: `${(n / max) * 100}%` }} />
+            </div>
+            <span className="w-4 text-slate-300">{n}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 const CLASSES = [
   "MAGE", "WARRIOR", "SHAMAN", "ROGUE", "PALADIN", "HUNTER",
   "DRUID", "WARLOCK", "PRIEST", "DEMONHUNTER",
@@ -37,6 +65,11 @@ export default function DeckBuilder() {
   }, [id, isNew]);
 
   const poolById = useMemo(() => Object.fromEntries(pool.map((c) => [c.id, c])), [pool]);
+  const counts = useMemo(() => {
+    const m: Record<string, number> = {};
+    for (const cid of cards) m[cid] = (m[cid] ?? 0) + 1;
+    return m;
+  }, [cards]);
   const classCards = useMemo(
     () => pool.filter((c) => c.cardClass === heroClass || c.cardClass === "NEUTRAL"),
     [pool, heroClass]
@@ -62,8 +95,9 @@ export default function DeckBuilder() {
     if (cards.length >= 30 || copies >= maxCopies) return;
     setCards([...cards, cardId]);
   }
-  function removeAt(i: number) {
-    setCards(cards.filter((_, idx) => idx !== i));
+  function removeOne(cid: string) {
+    const i = cards.indexOf(cid);
+    if (i >= 0) setCards(cards.filter((_, idx) => idx !== i));
   }
   function validate(): string[] {
     const errs: string[] = [];
@@ -159,23 +193,29 @@ export default function DeckBuilder() {
       <div className="space-y-3">
         <h3 className="font-bold">Your deck ({cards.length}/30)</h3>
         <div className="max-h-96 space-y-1 overflow-y-auto">
-          {cards.map((cid, i) => {
+          {Object.keys(counts).map((cid) => {
             const c = poolById[cid];
+            const count = counts[cid];
             return (
-              <div key={i} className="flex items-center justify-between rounded border border-slate-700 bg-slate-800 p-2">
-                <div>
-                  <div className="font-semibold">{c?.name ?? cid}</div>
-                  {c && (
-                    <div className="text-xs text-slate-500">
-                      {c.type} · {c.cost} mana{c.attack != null ? ` · ${c.attack}/${c.health}` : ""}
-                    </div>
+              <div key={cid} className="flex items-center gap-2 rounded border border-slate-700 bg-slate-800 p-1.5">
+                <div className="relative shrink-0">
+                  <CardView card={c} size="xs" />
+                  {count > 1 && (
+                    <span className="absolute -right-1.5 -top-1.5 rounded-full bg-amber-500 px-1.5 py-0.5 text-[11px] font-bold text-slate-900">
+                      ×{count}
+                    </span>
                   )}
                 </div>
-                <button className="text-red-400" onClick={() => removeAt(i)}>×</button>
+                <div className="min-w-0 flex-1">
+                  <div className="truncate font-semibold">{c?.name ?? cid}</div>
+                  <div className="text-xs text-slate-500">{c ? `${c.type} · ${c.cost} mana` : ""}</div>
+                </div>
+                <button className="text-red-400" onClick={() => removeOne(cid)} title="Remove one copy">−</button>
               </div>
             );
           })}
         </div>
+        <ManaCurve counts={counts} poolById={poolById} />
         {errors.length > 0 && (
           <ul className="text-sm text-red-400">{errors.map((e, i) => <li key={i}>{e}</li>)}</ul>
         )}
