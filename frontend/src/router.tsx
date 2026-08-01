@@ -9,11 +9,20 @@ import DeckList from "./pages/DeckList";
 import DeckBuilder from "./pages/DeckBuilder";
 import Play from "./pages/Play";
 import GameBoard from "./pages/GameBoard";
+import Profile from "./pages/Profile";
+import Admin from "./pages/Admin";
 import { useAuth } from "./store/auth";
 
 function RequireAuth({ children }: { children: ReactNode }) {
   const user = useAuth((s) => s.user);
   if (!user) return <Navigate to="/login" replace />;
+  return <>{children}</>;
+}
+
+function RequireAdmin({ children }: { children: ReactNode }) {
+  const user = useAuth((s) => s.user);
+  if (!user) return <Navigate to="/login" replace />;
+  if (user.role !== "admin") return <Navigate to="/" replace />;
   return <>{children}</>;
 }
 
@@ -30,6 +39,8 @@ export const router = createBrowserRouter([
       { path: "decks/:id", element: <RequireAuth><DeckBuilder /></RequireAuth> },
       { path: "play", element: <RequireAuth><Play /></RequireAuth> },
       { path: "game/:gameId", element: <RequireAuth><GameBoard /></RequireAuth> },
+      { path: "profile", element: <RequireAuth><Profile /></RequireAuth> },
+      { path: "admin", element: <RequireAdmin><Admin /></RequireAdmin> },
     ],
   },
 ]);
