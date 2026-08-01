@@ -4,7 +4,11 @@ Using Fireplace's bundled data (the same file its engine loads) guarantees the
 deck-builder universe exactly matches the set of cards the engine can play.
 """
 import json
+import os
 import sys
+
+# Allow running as `python scripts/build_cards.py` from anywhere.
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from hearthstone.cardxml import load
 
