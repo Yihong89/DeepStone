@@ -13,6 +13,28 @@ interface Selection {
   source: GameCard;
 }
 
+function WeaponView({ weapon }: { weapon: GameCard }) {
+  return (
+    <div className="flex flex-col items-center gap-1">
+      <div className="relative h-14 w-14 overflow-hidden rounded-full ring-1 ring-amber-500">
+        {weapon.id ? (
+          <img
+            src={`/images/cards/${weapon.id}.png`}
+            alt={weapon.name}
+            className="h-full w-full object-cover"
+            onError={(e) => { e.currentTarget.style.display = "none"; }}
+          />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center bg-slate-700 text-xl">⚔</div>
+        )}
+      </div>
+      <span className="text-xs font-bold text-amber-300">
+        {weapon.atk} ⚔ {weapon.max_health ?? 0}
+      </span>
+    </div>
+  );
+}
+
 function SecretMarker() {
   const [hover, setHover] = useState(false);
   return (
@@ -239,6 +261,7 @@ export default function GameBoard() {
             onClick={() => onOppCharacter(opp!.hero)}
             selected={targetIds.has(opp!.hero.entity_id)}
           />
+          {opp!.weapon && <WeaponView weapon={opp!.weapon} />}
           {opp!.secrets.map((s) => <SecretMarker key={s.entity_id} />)}
         </div>
       </section>
@@ -264,6 +287,7 @@ export default function GameBoard() {
       <section className="space-y-2">
         <div className="flex items-center justify-center gap-2">
           <HeroView hero={hero!} />
+          {me!.weapon && <WeaponView weapon={me!.weapon} />}
           {me!.secrets.map((s) => <CardView key={s.entity_id} gameCard={s} size="xs" />)}
         </div>
         <div className="flex justify-center">
