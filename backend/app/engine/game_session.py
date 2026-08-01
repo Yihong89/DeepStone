@@ -140,15 +140,18 @@ class GameSession:
         card = next((c for c in choice.cards if c.entity_id == eid), choice.cards[0])
         choice.choose(card)
 
-    def _apply_main_action(self, player_index: int, decision: dict) -> None:
+    def _apply_main_action(self, player_index: int, decision: dict) -> str | None:
+        """Apply a main action and return a human-readable description of it."""
         game = self._game
         player = game.players[player_index]
         action = decision.get("action", decision)
         kind = action.get("kind")
         by_id = entity_map(game)
+        desc = None
         try:
             if kind == "end_turn":
                 game.end_turn()
+                desc = "ended their turn"
             elif kind == "play_card":
                 card = by_id.get(action["card"])
                 if card is None:
@@ -156,20 +159,24 @@ class GameSession:
                 target = by_id.get(action["target"]) if action.get("target") else None
                 choose = by_id.get(action["choose"]) if action.get("choose") else None
                 game.play_card(card, target, action.get("index", 0), choose)
+                desc = f"played {card.data.name}"
             elif kind == "attack":
                 src = by_id.get(action["source"])
                 tgt = by_id.get(action["target"])
                 if src is None or tgt is None:
                     raise ValueError(f"unknown attack entities {action.get('source')}->{action.get('target')}")
                 game.attack(src, tgt)
+                desc = f"{src.data.name} attacked {tgt.data.name}"
             elif kind == "hero_power":
                 hp = player.hero.power
                 target = by_id.get(action["target"]) if action.get("target") else None
                 # HeroPower.use() goes through the Activate action, which pays
                 # the mana cost and enforces the once-per-turn limit.
                 hp.use(target)
+                desc = f"used {hp.data.name}"
             elif kind == "concede":
                 game.action_block(player, [Concede()], BlockType.PLAY)
+                desc = "conceded"
             else:
                 raise ValueError(f"unknown action kind: {kind}")
         except GameOver:
@@ -182,21 +189,39 @@ class GameSession:
                     game.end_turn()
                 except GameOver:
                     pass
+        return desc
 
-    def _prompt(self, player_index: int, kind: str, data: dict) -> None:
+    def _prompt(self, player_index: int, kind: str, data: dict) -> str | None:
         decision = self._ask(player_index, kind, data)
         if kind == "mulligan":
             self._apply_mulligan(player_index, decision)
         elif kind == "choice":
             self._apply_choice(player_index, decision)
         else:
-            self._apply_main_action(player_index, decision)
+            return self._apply_main_action(player_index, decision)
+        return None
+
+    # ---- battle log ----
+    def _log_message(self, message: str) -> None:
+        for i in range(2):
+            self._send(i, {"type": "log", "message": message})
+
+    def _field_ids(self, game) -> set[int]:
+        ids: set[int] = set()
+        for p in game.players:
+            if p.hero is not None:
+                ids.add(p.hero.entity_id)
+            for m in p.field:
+                ids.add(m.entity_id)
+        return ids
 
     # ---- game loop ----
     def _run(self) -> None:
         game = self._game
         game.start()
         self._broadcast()
+        mulligan_done = False
+        last_turn = -1
         while not game.ended:
             # Resolve any pending choices (mulligan, discover, choose-one...)
             pending = [i for i, p in enumerate(game.players) if p.choice is not None]
@@ -211,12 +236,41 @@ class GameSession:
                     self._prompt(i, "choice", data)
                 self._broadcast()
                 continue
+            # Mulligan phase is complete once the first main action arrives
+            if not mulligan_done:
+                mulligan_done = True
+                self._log_message("Mulligan complete — the match begins!")
             # Main action phase for the current player
             i = 0 if game.current_player is game.players[0] else 1
-            self._prompt(i, "main_action", {"type": "your_turn", "player": i})
+            name = self._players[i]["name"]
+            if game.turn != last_turn:
+                last_turn = game.turn
+                self._log_message(f"Turn {game.turn} — {name}'s turn")
+            field_before = self._field_ids(game)
+            desc = self._prompt(i, "main_action", {"type": "your_turn", "player": i})
+            if desc:
+                self._log_message(f"{name} {desc}")
+            # Log anything that was destroyed by this action
+            dead = field_before - self._field_ids(game)
+            hero_ids = {p.hero.entity_id for p in game.players if p.hero is not None}
+            by_id = entity_map(game)
+            for eid in dead:
+                if eid in hero_ids:
+                    continue
+                ent = by_id.get(eid)
+                if ent is not None and getattr(ent, "data", None):
+                    self._log_message(f"{ent.data.name} was destroyed")
             self._broadcast()
+        # Game over
+        result = serialize(game, 0)["result"]
+        states = result["playstates"] if result else []
+        if "WON" in states:
+            winner = 0 if states[0] == "WON" else 1
+            self._log_message(f"{self._players[winner]['name']} wins the game!")
+        else:
+            self._log_message("The game ended in a draw.")
         for i in range(2):
-            self._send(i, {"type": "game_over", "result": serialize(game, i)["result"]})
+            self._send(i, {"type": "game_over", "result": result})
 
     def _broadcast(self) -> None:
         game = self._game

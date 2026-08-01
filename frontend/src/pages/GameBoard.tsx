@@ -1,8 +1,9 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import type { GameCard } from "../api/types";
 import CardView from "../components/CardView";
 import ChoiceDialog from "../components/ChoiceDialog";
+import HeroView from "../components/HeroView";
 import TargetingOverlay from "../components/TargetingOverlay";
 import { useAuth } from "../store/auth";
 import { useGame } from "../store/game";
@@ -57,6 +58,11 @@ export default function GameBoard() {
     () => (me ? me.hand.filter((c) => mulliganCards.includes(c.entity_id)) : []),
     [me, mulliganCards]
   );
+  const log = useGame((s) => s.log);
+  const logRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (logRef.current) logRef.current.scrollTop = logRef.current.scrollHeight;
+  }, [log]);
 
   function clearSelection() {
     setSelection(null);
@@ -137,7 +143,8 @@ export default function GameBoard() {
     : null;
 
   return (
-    <div className="relative flex min-h-[80vh] flex-col justify-between gap-3">
+    <div className="relative flex gap-4">
+      <div className="flex min-h-[80vh] flex-1 flex-col justify-between gap-3">
       {selectionLabel && <TargetingOverlay label={selectionLabel} onCancel={clearSelection} />}
 
       {/* Opponent zone */}
@@ -160,8 +167,8 @@ export default function GameBoard() {
           ))}
         </div>
         <div className="flex items-center justify-center gap-2">
-          <CardView
-            gameCard={opp!.hero}
+          <HeroView
+            hero={opp!.hero}
             onClick={() => onOppCharacter(opp!.hero)}
             selected={targetIds.has(opp!.hero.entity_id)}
           />
@@ -184,7 +191,7 @@ export default function GameBoard() {
       {/* Player zone */}
       <section className="space-y-2">
         <div className="flex items-center justify-center gap-2">
-          <CardView gameCard={hero!} />
+          <HeroView hero={hero!} />
         </div>
         <div className="flex justify-center">
           <ManaCrystals available={me!.mana} total={me!.max_mana} />
@@ -200,6 +207,17 @@ export default function GameBoard() {
           ))}
         </div>
       </section>
+      </div>
+
+      <aside className="w-72 shrink-0">
+        <h3 className="mb-2 text-sm font-bold text-slate-300">Battle history</h3>
+        <div ref={logRef} className="max-h-[70vh] space-y-1 overflow-y-auto">
+          {log.map((m, i) => (
+            <div key={i} className="rounded bg-slate-800/60 px-2 py-1 text-xs text-slate-400">{m}</div>
+          ))}
+          {log.length === 0 && <p className="text-xs text-slate-600">No events yet.</p>}
+        </div>
+      </aside>
 
       {pending === "choice" && <ChoiceDialog />}
 
