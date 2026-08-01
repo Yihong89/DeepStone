@@ -95,7 +95,13 @@ class GameManager:
             loop.call_soon_threadsafe(self._do_send, ws, message)
 
     def _do_send(self, ws: WebSocket, message: dict) -> None:
-        asyncio.ensure_future(ws.send_json(message))
+        async def _send():
+            try:
+                await ws.send_json(message)
+            except Exception:
+                pass  # client disconnected — ignore
+
+        asyncio.ensure_future(_send())
 
     def _maybe_start(self, game_id: str, session: GameSession) -> None:
         if game_id in self._started or session.game.ended:
