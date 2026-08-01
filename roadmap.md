@@ -13,6 +13,12 @@ Items are roughly ordered by priority/impact. Checkboxes reflect progress.
 - [ ] **Camera & scene polish** — subtle camera moves on actions, board/table styling, dynamic lighting, hover highlights on 3D units.
 - [ ] **Keep 2D board as fallback** — an accessibility/performance toggle so the current 2D DOM board remains available.
 
+## 🔊 Audio
+- [ ] **Real Hearthstone hero + minion voices** — scrape the [HearthSFX](https://hearthsfx.github.io/) site to build a card-ID → sound-file map, then download the play/attack/death/emote sounds (~2,500 card pages, ~5,900 files, ~500 MB) into the private gitignored `backend/audio/`. Blizzard's audio — **private use only**, never committed.
+- [ ] **Per-class hero voice lines** — hero greetings / attack / death keyed by hero card ID, played on hero-power use and hero attacks.
+- [ ] **Sound settings** — separate music vs SFX volume controls and per-event toggles (currently a single mute).
+- [ ] **Ambient variety** — board/zone-themed background ambience that crossfades.
+
 ## Gameplay & AI
 - [ ] **Smarter AI + difficulty levels** (Easy / Medium / Hard) — the current bot is a simple heuristic (play on curve, trade sensibly).
 - [ ] **Matchmaking queue** — a "find game" button that pairs you with a random online opponent (currently PvP is via shareable challenge codes).
