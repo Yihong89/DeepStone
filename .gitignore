@@ -18,9 +18,10 @@ dist/
 .env
 .env.local
 
-# Card data & images
+# Card data, images & audio (private third-party assets)
 cards.json
 **/images/
+**/audio/
 
 # OS
 .DS_Store

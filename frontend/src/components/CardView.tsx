@@ -44,6 +44,9 @@ export default function CardView({ card, gameCard, size = "sm", onClick, selecte
   const damaged = currentHp != null && gameCard?.max_health != null && currentHp < gameCard.max_health;
 
   // Only a subtle interaction hint — the art itself shows name/cost/stats.
+  // Taunt minions always carry a purple aura so they stand out on the battlefield.
+  const taunt = gameCard?.taunt;
+  const tauntAura = taunt ? "shadow-[0_0_14px_rgba(168,85,247,0.6)]" : "";
   const ring = selected
     ? "ring-2 ring-amber-400"
     : canAttack
@@ -61,7 +64,7 @@ export default function CardView({ card, gameCard, size = "sm", onClick, selecte
     >
       <Tag
         type={onClick ? "button" : undefined}
-        className={`relative overflow-hidden rounded ${ring} ${onClick ? "cursor-pointer" : ""}`}
+        className={`relative overflow-hidden rounded ${ring} ${tauntAura} ${onClick ? "cursor-pointer" : ""}`}
         style={{ width: w, height: h }}
         onClick={onClick}
       >
@@ -71,6 +74,11 @@ export default function CardView({ card, gameCard, size = "sm", onClick, selecte
           <div className="flex h-full w-full items-center justify-center text-6xl text-slate-600">
             {type === "SPELL" ? "✨" : type === "WEAPON" ? "⚔" : "🛡"}
           </div>
+        )}
+        {taunt && (
+          <span className="absolute left-1 top-1 rounded bg-purple-600/90 px-1 py-0.5 text-[9px] font-bold uppercase text-white shadow">
+            Taunt
+          </span>
         )}
         {/* Live attack / HP on board minions */}
         {gameCard && attack != null && currentHp != null && (
