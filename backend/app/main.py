@@ -11,6 +11,8 @@ from .routers.admin import router as admin_router
 from .routers.auth import hash_password, router as auth_router
 from .routers.cards import router as cards_router
 from .routers.decks import router as decks_router
+from .routers.games import router as games_router
+from .routers.matches import router as matches_router
 
 
 async def _bootstrap_admin():
@@ -43,6 +45,8 @@ app.include_router(admin_router)
 app.include_router(auth_router)
 app.include_router(cards_router)
 app.include_router(decks_router)
+app.include_router(games_router)
+app.include_router(matches_router)
 
 
 @app.get("/health")

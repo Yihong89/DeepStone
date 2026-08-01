@@ -29,6 +29,10 @@ class DeckIn(BaseModel):
     card_ids: list[str]
 
 
+class DeckIdIn(BaseModel):
+    deck_id: int
+
+
 class DeckOut(BaseModel):
     id: int
     user_id: int

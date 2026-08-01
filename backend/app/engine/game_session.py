@@ -81,6 +81,9 @@ class GameSession:
     def game(self) -> Game:
         return self._game
 
+    def player_is_bot(self, index: int) -> bool:
+        return self._players[index]["is_bot"]
+
     # ---- wiring ----
     def set_send(self, player_index: int, callback) -> None:
         self._sends[player_index] = callback

@@ -39,3 +39,16 @@ def get_card_map() -> dict[str, CardMeta]:
 
 def get_card(card_id: str) -> CardMeta | None:
     return _map.get(card_id)
+
+
+def build_ai_deck(hero_class: str) -> list[str]:
+    """Build a legal 30-card deck for an AI opponent from the card universe."""
+    pool = [c for c in load_cards() if c["cardClass"] in (hero_class, "NEUTRAL")]
+    deck: list[str] = []
+    for c in pool:
+        copies = 1 if c["rarity"] == "LEGENDARY" else 2
+        for _ in range(min(copies, 30 - len(deck))):
+            deck.append(c["id"])
+        if len(deck) >= 30:
+            break
+    return deck
