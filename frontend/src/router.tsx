@@ -7,6 +7,7 @@ import Lobby from "./pages/Lobby";
 import Gallery from "./pages/Gallery";
 import DeckList from "./pages/DeckList";
 import DeckBuilder from "./pages/DeckBuilder";
+import Play from "./pages/Play";
 import { useAuth } from "./store/auth";
 
 function RequireAuth({ children }: { children: ReactNode }) {
@@ -26,6 +27,7 @@ export const router = createBrowserRouter([
       { path: "cards", element: <RequireAuth><Gallery /></RequireAuth> },
       { path: "decks", element: <RequireAuth><DeckList /></RequireAuth> },
       { path: "decks/:id", element: <RequireAuth><DeckBuilder /></RequireAuth> },
+      { path: "play", element: <RequireAuth><Play /></RequireAuth> },
     ],
   },
 ]);
