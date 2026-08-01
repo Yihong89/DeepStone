@@ -10,38 +10,37 @@ interface Props {
 export default function HeroView({ hero, onClick, selected }: Props) {
   const [imgFailed, setImgFailed] = useState(false);
   const hp = (hero.max_health ?? 0) - (hero.damage ?? 0);
-  const imgUrl = hero.id && !imgFailed ? `/images/cards/${hero.id}.png` : null;
+  const imgUrl = hero.id && !imgFailed ? `/images/cards_board/${hero.id}.png` : null;
   const Tag = onClick ? "button" : "div";
   return (
-    <Tag
-      onClick={onClick}
-      className={`relative overflow-hidden rounded ${selected ? "ring-2 ring-amber-400" : ""} ${onClick ? "cursor-pointer" : ""}`}
-      style={{ width: 84, height: 127 }}
-    >
-      {imgUrl ? (
-        <img
-          src={imgUrl}
-          alt={hero.name}
-          className="h-full w-full object-cover"
-          onError={() => setImgFailed(true)}
-        />
-      ) : (
-        <div className="flex h-full w-full items-center justify-center text-4xl text-slate-500">🦸</div>
-      )}
-      <div className="absolute inset-0 flex flex-col justify-between p-1">
-        <div className="flex justify-center">
-          {hero.armor ? (
-            <span className="rounded-full bg-slate-700/90 px-1.5 py-0.5 text-[11px] font-bold text-sky-300">
-              🛡 {hero.armor}
-            </span>
-          ) : null}
+    <div className="flex flex-col items-center gap-1.5">
+      <Tag onClick={onClick} className={`relative block ${onClick ? "cursor-pointer" : ""}`}>
+        <div
+          className={`h-28 w-28 overflow-hidden rounded-full ring-2 ${
+            selected ? "ring-amber-400" : "ring-slate-600"
+          } shadow-lg`}
+        >
+          {imgUrl ? (
+            <img
+              src={imgUrl}
+              alt={hero.name}
+              className="h-full w-full object-cover"
+              onError={() => setImgFailed(true)}
+            />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center bg-slate-700 text-4xl">🦸</div>
+          )}
         </div>
-        <div className="flex justify-center">
-          <span className="rounded-full bg-red-600 px-2 py-0.5 text-sm font-black text-white shadow">
-            {hp}
+        <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 rounded-full bg-red-600 px-2.5 py-0.5 text-sm font-black text-white shadow">
+          {hp}
+        </span>
+        {hero.armor ? (
+          <span className="absolute -right-1 -top-1 rounded-full bg-slate-700 px-1.5 py-0.5 text-xs font-bold text-sky-300 shadow">
+            🛡{hero.armor}
           </span>
-        </div>
-      </div>
-    </Tag>
+        ) : null}
+      </Tag>
+      <span className="text-sm font-semibold text-slate-200">{hero.name}</span>
+    </div>
   );
 }
