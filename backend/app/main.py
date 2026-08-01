@@ -7,6 +7,7 @@ from .config import settings
 from .db import SessionLocal, init_db
 from .engine.carddata import load_cards
 from .models import User
+from .routers.admin import router as admin_router
 from .routers.auth import hash_password, router as auth_router
 from .routers.cards import router as cards_router
 
@@ -37,6 +38,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="Deepcards", lifespan=lifespan)
+app.include_router(admin_router)
 app.include_router(auth_router)
 app.include_router(cards_router)
 
