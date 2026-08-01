@@ -4,6 +4,7 @@ from fastapi import FastAPI
 
 from .db import init_db
 from .engine.carddata import load_cards
+from .routers.auth import router as auth_router
 from .routers.cards import router as cards_router
 
 
@@ -15,6 +16,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="Deepcards", lifespan=lifespan)
+app.include_router(auth_router)
 app.include_router(cards_router)
 
 
