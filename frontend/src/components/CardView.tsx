@@ -20,12 +20,15 @@ const DEFAULT_STYLE = { frame: "border-slate-600", badge: "bg-slate-600", label:
 
 export default function CardView({ card, gameCard, size = "sm", onClick, selected }: CardViewProps) {
   const [hover, setHover] = useState(false);
+  const [imgFailed, setImgFailed] = useState(false);
   const h = size === "lg" ? 300 : size === "md" ? 210 : 150;
   const w = Math.round(h * 0.714);
   const name = gameCard?.name ?? card?.name ?? "";
   const cost = gameCard?.cost ?? card?.cost ?? null;
   const text = gameCard?.text ?? card?.text ?? "";
   const type = gameCard?.type ?? card?.type ?? "";
+  const id = gameCard?.id ?? card?.id;
+  const imgUrl = id && !imgFailed ? `/images/cards/${id}.png` : null;
   const attack = gameCard?.atk ?? card?.attack ?? null;
   const health = gameCard
     ? gameCard.max_health != null
@@ -62,6 +65,14 @@ export default function CardView({ card, gameCard, size = "sm", onClick, selecte
         <div className="absolute inset-0 flex items-center justify-center text-6xl text-slate-600">
           {type === "SPELL" ? "✨" : isMinion ? "🛡" : type === "WEAPON" ? "⚔" : "🎖"}
         </div>
+        {imgUrl && (
+          <img
+            src={imgUrl}
+            alt={name}
+            className="absolute inset-0 h-full w-full object-cover"
+            onError={() => setImgFailed(true)}
+          />
+        )}
         {cost != null && (
           <span className="absolute left-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-amber-500 text-sm font-bold text-slate-900">
             {cost}
