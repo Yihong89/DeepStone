@@ -67,7 +67,7 @@ export default function CardView({ card, gameCard, size = "sm", onClick, selecte
     >
       <Tag
         type={onClick ? "button" : undefined}
-        className={`relative overflow-hidden ${isBoardChar ? "rounded-full" : "rounded"} ${ring} ${tauntAura} ${onClick ? "cursor-pointer" : ""}`}
+        className={`relative overflow-hidden rounded ${ring} ${tauntAura} ${onClick ? "cursor-pointer" : ""}`}
         style={{ width: w, height: h }}
         onClick={onClick}
       >
