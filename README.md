@@ -56,6 +56,18 @@ docker compose up -d
 
 `backend/images` (card art), `backend/audio`, and `frontend/dist` are bind-mounted into the container (see `deploy/docker-compose.yml`), so you can swap assets on the host without rebuilding the image. The SQLite DB persists in a named Docker volume.
 
+### Updating a deployed Mac Mini
+
+The Mini keeps a git checkout of this repo and can self-update with one command (read-only GitHub deploy key, `restart: unless-stopped` container, colima auto-start at login):
+
+```bash
+~/update-deepstone.sh   # on the Mini
+# or from anywhere:
+ssh <mac-mini-user>@<mac-mini-ip> '~/update-deepstone.sh'
+```
+
+The script does `git pull --ff-only origin main`, rebuilds `frontend/dist` (bind-mounted), then `docker compose up -d --build`. So the release flow is: merge a PR on GitHub → run the script on the Mini.
+
 ## Card art: layout & replacing images
 
 Card art is **not** stored in git. `backend/images/` is gitignored (`.gitignore` → `**/images/`) and a pre-commit guard (`.githooks/pre-commit`) refuses commits that would add files under an `images/` directory (enable it with `git config core.hooksPath .githooks`). The default art is Blizzard's copyrighted property and must stay private.
