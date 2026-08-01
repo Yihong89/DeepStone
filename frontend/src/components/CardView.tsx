@@ -16,6 +16,7 @@ const ASPECT = 256 / 388;
 
 export default function CardView({ card, gameCard, size = "sm", onClick, selected, dataEid }: CardViewProps) {
   const [hover, setHover] = useState(false);
+  const [boardFailed, setBoardFailed] = useState(false);
   const [imgFailed, setImgFailed] = useState(false);
   const [bigFailed, setBigFailed] = useState(false);
   // A character in play (board minion) uses the raw square art and a square tile;
@@ -29,9 +30,11 @@ export default function CardView({ card, gameCard, size = "sm", onClick, selecte
   const type = gameCard?.type ?? card?.type ?? "";
   const id = gameCard?.id ?? card?.id;
   const attack = gameCard?.atk ?? card?.attack ?? null;
-  const imgUrl = id && !imgFailed
-    ? `${isBoardChar ? "/images/cards_board" : "/images/cards"}/${id}.png`
-    : null;
+  // Board minions prefer the raw square art; fall back to the framed card if it's
+  // unavailable so a minion never shows as an empty shield.
+  const boardImgUrl = id && isBoardChar && !boardFailed ? `/images/cards_board/${id}.png` : null;
+  const framedImgUrl = id && !imgFailed ? `/images/cards/${id}.png` : null;
+  const imgUrl = isBoardChar ? (boardImgUrl ?? framedImgUrl) : framedImgUrl;
   const bigUrl = id && !bigFailed ? `/images/cards_big/${id}.png` : null;
   const canAttack = gameCard?.can_attack;
   const keywords = getKeywords(text);
@@ -69,7 +72,12 @@ export default function CardView({ card, gameCard, size = "sm", onClick, selecte
         onClick={onClick}
       >
         {imgUrl ? (
-          <img src={imgUrl} alt={name} className="h-full w-full object-cover" onError={() => setImgFailed(true)} />
+          <img
+            src={imgUrl}
+            alt={name}
+            className="h-full w-full object-cover"
+            onError={() => (isBoardChar && boardImgUrl ? setBoardFailed(true) : setImgFailed(true))}
+          />
         ) : (
           <div className="flex h-full w-full items-center justify-center text-6xl text-slate-600">
             {type === "SPELL" ? "✨" : type === "WEAPON" ? "⚔" : "🛡"}

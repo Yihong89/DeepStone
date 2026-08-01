@@ -55,6 +55,22 @@ def main() -> None:
     cards_path = sys.argv[1] if len(sys.argv) > 1 else "cards.json"
     cards = json.load(open(cards_path))
     ids = [c["id"] for c in cards]
+    if "--tokens" in sys.argv:
+        # Also fetch art for non-collectible MINION cards (summoned tokens), so
+        # every minion that can appear on the board has art.
+        from hearthstone.cardxml import load as cardxml_load
+
+        from app.engine.fireplace_setup import ensure_carddefs
+        import fireplace.cards as fc
+
+        if not fc.db.initialized:
+            fc.db.initialize()
+        db, _ = cardxml_load(path=str(ensure_carddefs()))
+        known = set(ids)
+        for c in db.values():
+            t = getattr(c, "type", None)
+            if t and t.name == "MINION" and c.card_id not in known:
+                ids.append(c.card_id)
     for _, _, subdir in SOURCES:
         os.makedirs(os.path.join(ROOT, subdir), exist_ok=True)
     items = [(cid, url, subdir) for cid in ids for _, url, subdir in SOURCES]
