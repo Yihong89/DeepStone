@@ -23,10 +23,18 @@ export default function CardView({ card, gameCard, size = "sm", onClick, selecte
   const text = gameCard?.text ?? card?.text ?? "";
   const type = gameCard?.type ?? card?.type ?? "";
   const id = gameCard?.id ?? card?.id;
+  const attack = gameCard?.atk ?? card?.attack ?? null;
   const imgUrl = id && !imgFailed ? `/images/cards/${id}.png` : null;
   const bigUrl = id && !bigFailed ? `/images/cards_big/${id}.png` : null;
   const canAttack = gameCard?.can_attack;
   const keywords = getKeywords(text);
+
+  // Live stats for minions on the board (the art shows base, not current HP).
+  const currentHp =
+    gameCard && gameCard.max_health != null
+      ? Math.max(0, gameCard.max_health - (gameCard.damage ?? 0))
+      : null;
+  const damaged = currentHp != null && gameCard?.max_health != null && currentHp < gameCard.max_health;
 
   // Only a subtle interaction hint — the art itself shows name/cost/stats.
   const ring = selected
@@ -54,6 +62,21 @@ export default function CardView({ card, gameCard, size = "sm", onClick, selecte
         ) : (
           <div className="flex h-full w-full items-center justify-center text-6xl text-slate-600">
             {type === "SPELL" ? "✨" : type === "WEAPON" ? "⚔" : "🛡"}
+          </div>
+        )}
+        {/* Live attack / HP on board minions */}
+        {gameCard && attack != null && currentHp != null && (
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 flex items-end justify-between p-1">
+            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-orange-600 text-xs font-black text-white shadow">
+              {attack}
+            </span>
+            <span
+              className={`flex h-6 w-6 items-center justify-center rounded-full text-xs font-black text-white shadow ${
+                damaged ? "bg-red-600" : "bg-slate-600"
+              }`}
+            >
+              {currentHp}
+            </span>
           </div>
         )}
       </Tag>
