@@ -1,4 +1,4 @@
-# Deepcards Roadmap
+# DeepStone Roadmap
 
 Current status: **v1 shipped** — register/login, full card gallery, deck builder with
 validation, play vs AI and challenge-based PvP, real-time board with battle log,

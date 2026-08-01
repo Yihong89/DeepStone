@@ -29,7 +29,7 @@ async def _bootstrap_admin():
         if user is None:
             db.add(User(
                 username=settings.admin_username,
-                email=f"{settings.admin_username}@deepcards.local",
+                email=f"{settings.admin_username}@deepstone.local",
                 hashed_password=hash_password(settings.admin_password),
                 role="admin",
             ))
@@ -45,7 +45,7 @@ async def lifespan(app: FastAPI):
     yield
 
 
-app = FastAPI(title="Deepcards", lifespan=lifespan)
+app = FastAPI(title="DeepStone", lifespan=lifespan)
 app.include_router(admin_router)
 app.include_router(auth_router)
 app.include_router(cards_router)

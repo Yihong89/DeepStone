@@ -11,7 +11,7 @@ export class ApiError extends Error {
 }
 
 export function getToken(): string | null {
-  return localStorage.getItem("deepcards_token");
+  return localStorage.getItem("deepstone_token");
 }
 
 export async function apiFetch<T>(path: string, opts: RequestInit = {}): Promise<T> {
