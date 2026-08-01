@@ -7,16 +7,24 @@ from fireplace.game import Game
 def _hand_card(card, hidden: bool) -> dict:
     if hidden:
         return {"entity_id": card.entity_id}
+    targets = []
+    if hasattr(card, "targets") and card.targets:
+        targets = [t.entity_id for t in card.targets]
     return {
         "entity_id": card.entity_id,
         "id": card.id,
         "name": card.data.name,
         "cost": card.cost,
         "text": getattr(card, "description", "") or "",
+        "requires_target": bool(card.requires_target()) if hasattr(card, "requires_target") else False,
+        "targets": targets,
     }
 
 
 def _character(card) -> dict:
+    attack_targets = []
+    if hasattr(card, "can_attack") and card.can_attack() and hasattr(card, "attack_targets"):
+        attack_targets = [t.entity_id for t in card.attack_targets]
     return {
         "entity_id": card.entity_id,
         "id": card.id,
@@ -31,6 +39,7 @@ def _character(card) -> dict:
         "exhausted": card.exhausted,
         "num_attacks": getattr(card, "num_attacks", 0),
         "can_attack": card.can_attack() if hasattr(card, "can_attack") else False,
+        "attack_targets": attack_targets,
         "zone_position": getattr(card, "zone_position", None),
     }
 
