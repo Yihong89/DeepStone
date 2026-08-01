@@ -70,6 +70,24 @@ export default function DeckBuilder() {
     for (const cid of cards) m[cid] = (m[cid] ?? 0) + 1;
     return m;
   }, [cards]);
+
+  const typeSummary = useMemo(() => {
+    const s: Record<string, number> = {};
+    for (const cid of Object.keys(counts)) {
+      const type = poolById[cid]?.type ?? "OTHER";
+      s[type] = (s[type] ?? 0) + counts[cid];
+    }
+    return s;
+  }, [counts, poolById]);
+
+  const sortedUnique = useMemo(() => {
+    return Object.keys(counts).sort((a, b) => {
+      const ca = poolById[a]?.cost ?? 0;
+      const cb = poolById[b]?.cost ?? 0;
+      if (ca !== cb) return ca - cb;
+      return (poolById[a]?.name ?? a).localeCompare(poolById[b]?.name ?? b);
+    });
+  }, [counts, poolById]);
   const classCards = useMemo(
     () => pool.filter((c) => c.cardClass === heroClass || c.cardClass === "NEUTRAL"),
     [pool, heroClass]
@@ -192,8 +210,14 @@ export default function DeckBuilder() {
       </div>
       <div className="space-y-3">
         <h3 className="font-bold">Your deck ({cards.length}/30)</h3>
+        <p className="text-xs text-slate-400">
+          {(["MINION", "SPELL", "WEAPON"] as const)
+            .filter((t) => (typeSummary[t] ?? 0) > 0)
+            .map((t) => `${t.toLowerCase()}s: ${typeSummary[t] ?? 0}`)
+            .join(" · ")}
+        </p>
         <div className="max-h-96 space-y-1 overflow-y-auto">
-          {Object.keys(counts).map((cid) => {
+          {sortedUnique.map((cid) => {
             const c = poolById[cid];
             const count = counts[cid];
             return (
