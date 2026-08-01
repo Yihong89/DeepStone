@@ -101,6 +101,7 @@ async def game_ws(websocket: WebSocket, game_id: str, token: str,
     await websocket.accept()
     loop = asyncio.get_running_loop()
     manager.register_ws(game_id, player_index, websocket, loop)
+    await websocket.send_json({"type": "welcome", "player_index": player_index})
     try:
         while True:
             msg = await websocket.receive_json()
