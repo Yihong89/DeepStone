@@ -112,6 +112,24 @@ export default function GameBoard() {
     );
   }, [lastEvent]);
 
+  // Audio: looping background music + attack hit sounds (mutable).
+  const [muted, setMuted] = useState(false);
+  useEffect(() => {
+    const music = new Audio("/audio/main-theme.mp3");
+    music.loop = true;
+    music.volume = 0.35;
+    if (!muted) music.play().catch(() => {});
+    return () => music.pause();
+  }, [muted]);
+
+  const attackSounds = ["/audio/combat_crit_1.mp3", "/audio/combat_parry_1.mp3", "/audio/combat_block_1.mp3"];
+  useEffect(() => {
+    if (!lastEvent || lastEvent.kind !== "attack" || muted) return;
+    const snd = new Audio(attackSounds[Math.floor(Math.random() * attackSounds.length)]);
+    snd.volume = 0.6;
+    snd.play().catch(() => {});
+  }, [lastEvent, muted]);
+
   function clearSelection() {
     setSelection(null);
     setTargets([]);
@@ -235,6 +253,10 @@ export default function GameBoard() {
         <button onClick={useHeroPower} disabled={!yourTurn || !heroPower?.can_play}
           className="rounded bg-slate-700 px-4 py-1 font-semibold disabled:opacity-40">
           Hero power ({heroPower?.cost ?? "–"})
+        </button>
+        <button onClick={() => setMuted((m) => !m)}
+          className="rounded bg-slate-700 px-3 py-1 text-base" title={muted ? "Unmute" : "Mute"}>
+          {muted ? "🔇" : "🔊"}
         </button>
       </section>
 

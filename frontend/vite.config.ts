@@ -8,8 +8,9 @@ export default defineConfig({
     proxy: {
       // Enable WebSocket upgrades for the game WS endpoint under /api.
       "/api": { target: "http://localhost:8000", ws: true },
-      // Card art is served by the backend from backend/images/.
+      // Card art and audio are served by the backend (gitignored).
       "/images": "http://localhost:8000",
+      "/audio": "http://localhost:8000",
     },
   },
 });

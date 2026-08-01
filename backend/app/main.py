@@ -52,10 +52,14 @@ app.include_router(decks_router)
 app.include_router(games_router)
 app.include_router(matches_router)
 
-# Serve private card art from backend/images/ (gitignored — never committed).
+# Serve private card art and audio (gitignored — never committed).
 _images_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "images")
 os.makedirs(_images_dir, exist_ok=True)
 app.mount("/images", StaticFiles(directory=_images_dir), name="images")
+
+_audio_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "audio")
+os.makedirs(_audio_dir, exist_ok=True)
+app.mount("/audio", StaticFiles(directory=_audio_dir), name="audio")
 
 
 @app.get("/health")
