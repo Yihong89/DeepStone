@@ -144,10 +144,21 @@ export default function GameBoard() {
     return () => music.pause();
   }, [muted]);
 
-  const attackSounds = ["/audio/combat_crit_1.mp3", "/audio/combat_parry_1.mp3", "/audio/combat_block_1.mp3"];
+  // Sound effects per event type (attack, card play, minion death, hero power).
+  const SFX: Record<string, string[]> = {
+    attack: ["/audio/combat_crit_1.mp3", "/audio/combat_parry_1.mp3", "/audio/combat_block_1.mp3"],
+    play: ["/audio/cast_arcane.mp3"],
+    death: ["/audio/mob_beast_hurt.mp3", "/audio/mob_boar_hurt.mp3", "/audio/mob_ogre_hurt.mp3"],
+    hero_power: [
+      "/audio/cast_fire.mp3", "/audio/cast_frost.mp3", "/audio/cast_holy.mp3",
+      "/audio/cast_shadow.mp3", "/audio/cast_nature.mp3",
+    ],
+  };
   useEffect(() => {
-    if (!lastEvent || lastEvent.kind !== "attack" || muted) return;
-    const snd = new Audio(attackSounds[Math.floor(Math.random() * attackSounds.length)]);
+    if (!lastEvent || muted) return;
+    const pool = SFX[lastEvent.kind];
+    if (!pool || !pool.length) return;
+    const snd = new Audio(pool[Math.floor(Math.random() * pool.length)]);
     snd.volume = 0.6;
     snd.play().catch(() => {});
   }, [lastEvent, muted]);
