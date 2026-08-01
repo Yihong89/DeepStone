@@ -10,6 +10,7 @@ interface GameStore {
   mulliganCards: number[];
   choiceCards: GameCard[];
   log: string[];
+  lastEvent: { kind: string; source?: number; target?: number } | null;
   connect: (gameId: string, token: string) => void;
   send: (msg: unknown) => void;
   reset: () => void;
@@ -22,6 +23,7 @@ export const useGame = create<GameStore>((set, get) => ({
   mulliganCards: [],
   choiceCards: [],
   log: [],
+  lastEvent: null,
   connect: (gameId, token) => {
     get().reset();
     const proto = location.protocol === "https:" ? "wss" : "ws";
@@ -38,6 +40,8 @@ export const useGame = create<GameStore>((set, get) => ({
         set({ pending: "choice", choiceCards: msg.choice.cards });
       } else if (msg.type === "log") {
         set((s) => ({ log: [...s.log, msg.message].slice(-100) }));
+      } else if (msg.type === "event") {
+        set({ lastEvent: msg.event });
       } else if (msg.type === "game_over") {
         set({ pending: null });
       }
@@ -50,6 +54,6 @@ export const useGame = create<GameStore>((set, get) => ({
   },
   reset: () => {
     get().ws?.close();
-    set({ ws: null, state: null, pending: null, mulliganCards: [], choiceCards: [], log: [] });
+    set({ ws: null, state: null, pending: null, mulliganCards: [], choiceCards: [], log: [], lastEvent: null });
   },
 }));
