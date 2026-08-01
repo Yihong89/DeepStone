@@ -1,11 +1,15 @@
 """Shared helpers for engine integration tests (real Fireplace card data)."""
 import json
+import logging
 from pathlib import Path
 
 import fireplace.cards as fireplace_cards
 from fireplace.exceptions import GameOver
 from fireplace.game import Game
 from fireplace.player import Player
+
+# Fireplace logs every action at INFO; quiet it so engine tests run fast.
+logging.getLogger("fireplace").setLevel(logging.WARNING)
 
 # Fireplace lazily initializes its card DB (via db.filter); do it explicitly.
 if not fireplace_cards.db.initialized:
