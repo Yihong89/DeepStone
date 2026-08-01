@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import type { GameCard } from "../api/types";
 import CardView from "../components/CardView";
 import ChoiceDialog from "../components/ChoiceDialog";
@@ -74,6 +74,7 @@ function ManaCrystals({ available, total }: { available: number; total: number }
 
 export default function GameBoard() {
   const { gameId } = useParams();
+  const navigate = useNavigate();
   const token = useAuth((s) => s.token);
   const state = useGame((s) => s.state);
   const pending = useGame((s) => s.pending);
@@ -382,6 +383,20 @@ export default function GameBoard() {
             <p className="mt-2 text-slate-400">
               {state.result?.playstates?.join(" vs ") ?? "Game over"}
             </p>
+            <div className="mt-6 flex justify-center gap-3">
+              <button
+                onClick={() => navigate("/play")}
+                className="rounded bg-amber-500 px-5 py-2 font-semibold text-slate-900"
+              >
+                Play again
+              </button>
+              <button
+                onClick={() => navigate("/")}
+                className="rounded bg-slate-700 px-5 py-2 font-semibold text-slate-200"
+              >
+                Back to lobby
+              </button>
+            </div>
           </div>
         </div>
       )}
