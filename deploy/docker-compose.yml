@@ -1,0 +1,27 @@
+services:
+  backend:
+    build:
+      context: ..
+      dockerfile: deploy/backend.Dockerfile
+    environment:
+      DEEPCHARD_SECRET: ${DEEPCHARD_SECRET:-change-me-in-production}
+      DEEPCHARD_DB_URL: sqlite+aiosqlite:////data/deepcards.db
+      DEEPCHARD_ADMIN_USER: ${DEEPCHARD_ADMIN_USER:-admin}
+      DEEPCHARD_ADMIN_PASS: ${DEEPCHARD_ADMIN_PASS:-}
+      CARDS_JSON_PATH: /srv/backend/cards.json
+    volumes:
+      - deepcards-data:/data
+    expose:
+      - "8000"
+
+  frontend:
+    build:
+      context: ..
+      dockerfile: deploy/frontend.Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - backend
+
+volumes:
+  deepcards-data:
