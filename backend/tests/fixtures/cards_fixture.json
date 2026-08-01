@@ -1,0 +1,18 @@
+[
+  {"id": "CS2_029", "name": "Fireball", "text": "Deal $6 damage.", "cost": 4, "attack": null, "health": null, "type": "SPELL", "cardClass": "MAGE", "rarity": "COMMON", "set": "CORE", "collectible": true},
+  {"id": "EX1_279", "name": "Pyroblast", "text": "Deal $10 damage.", "cost": 10, "attack": null, "health": null, "type": "SPELL", "cardClass": "MAGE", "rarity": "EPIC", "set": "EXPERT1", "collectible": true},
+  {"id": "CS2_200", "name": "Boulderfist Ogre", "text": "", "cost": 6, "attack": 6, "health": 7, "type": "MINION", "cardClass": "NEUTRAL", "rarity": "FREE", "set": "CORE", "collectible": true},
+  {"id": "CS2_182", "name": "Chillwind Yeti", "text": "", "cost": 4, "attack": 4, "health": 5, "type": "MINION", "cardClass": "NEUTRAL", "rarity": "FREE", "set": "CORE", "collectible": true},
+  {"id": "CS2_131", "name": "River Crocolisk", "text": "", "cost": 2, "attack": 2, "health": 3, "type": "MINION", "cardClass": "NEUTRAL", "rarity": "FREE", "set": "CORE", "collectible": true},
+  {"id": "CS2_121", "name": "Frostwolf Grunt", "text": "Taunt", "cost": 2, "attack": 2, "health": 2, "type": "MINION", "cardClass": "NEUTRAL", "rarity": "FREE", "set": "CORE", "collectible": true},
+  {"id": "CS2_201", "name": "Core Hound", "text": "", "cost": 7, "attack": 9, "health": 5, "type": "MINION", "cardClass": "NEUTRAL", "rarity": "FREE", "set": "CORE", "collectible": true},
+  {"id": "CS2_118", "name": "Magma Rager", "text": "", "cost": 3, "attack": 5, "health": 1, "type": "MINION", "cardClass": "NEUTRAL", "rarity": "FREE", "set": "CORE", "collectible": true},
+  {"id": "CS2_124", "name": "Wolfrider", "text": "Charge", "cost": 3, "attack": 3, "health": 1, "type": "MINION", "cardClass": "NEUTRAL", "rarity": "FREE", "set": "CORE", "collectible": true},
+  {"id": "CS2_127", "name": "Silverback Patriarch", "text": "Taunt", "cost": 3, "attack": 1, "health": 4, "type": "MINION", "cardClass": "NEUTRAL", "rarity": "FREE", "set": "CORE", "collectible": true},
+  {"id": "CS2_142", "name": "Kobold Geomancer", "text": "Spell Damage +1", "cost": 2, "attack": 2, "health": 2, "type": "MINION", "cardClass": "NEUTRAL", "rarity": "FREE", "set": "CORE", "collectible": true},
+  {"id": "CS2_147", "name": "Gnomish Inventor", "text": "Battlecry: Draw a card.", "cost": 4, "attack": 2, "health": 4, "type": "MINION", "cardClass": "NEUTRAL", "rarity": "FREE", "set": "CORE", "collectible": true},
+  {"id": "CS2_150", "name": "Nightblade", "text": "Battlecry: Deal 3 damage to the enemy hero.", "cost": 5, "attack": 4, "health": 4, "type": "MINION", "cardClass": "NEUTRAL", "rarity": "FREE", "set": "CORE", "collectible": true},
+  {"id": "CS2_152", "name": "Novice Engineer", "text": "Battlecry: Draw a card.", "cost": 2, "attack": 1, "health": 1, "type": "MINION", "cardClass": "NEUTRAL", "rarity": "FREE", "set": "CORE", "collectible": true},
+  {"id": "CS2_172", "name": "Bloodfen Raptor", "text": "", "cost": 2, "attack": 3, "health": 2, "type": "MINION", "cardClass": "NEUTRAL", "rarity": "FREE", "set": "CORE", "collectible": true},
+  {"id": "CS2_173", "name": "Bluegill Warrior", "text": "Charge", "cost": 2, "attack": 2, "health": 1, "type": "MINION", "cardClass": "NEUTRAL", "rarity": "FREE", "set": "CORE", "collectible": true}
+]
