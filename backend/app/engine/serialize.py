@@ -36,6 +36,15 @@ def _character(card) -> dict:
 
 
 def _hero(hero) -> dict:
+    if hero is None:
+        # Pre-start state: hero not summoned yet.
+        return {
+            "entity_id": None, "id": None, "name": "Unknown",
+            "atk": 0, "max_health": 0, "damage": 0, "taunt": False,
+            "stealthed": False, "divine_shield": False, "frozen": False,
+            "exhausted": False, "num_attacks": 0, "can_attack": False,
+            "zone_position": None, "armor": 0,
+        }
     d = _character(hero)
     d["armor"] = hero.armor
     return d
@@ -63,7 +72,7 @@ def _player(player, index: int, hidden: bool) -> dict:
     return {
         "index": index,
         "hero": _hero(player.hero),
-        "hero_power": _hero_power(player.hero.power),
+        "hero_power": _hero_power(player.hero.power) if player.hero else None,
         "weapon": _weapon(player.weapon),
         "deck_count": len(player.deck),
         "hand": [_hand_card(c, hidden) for c in player.hand],
