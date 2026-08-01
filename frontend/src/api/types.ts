@@ -46,6 +46,9 @@ export interface GameCard {
   exhausted?: boolean;
   num_attacks?: number;
   can_attack?: boolean;
+  attack_targets?: number[];
+  requires_target?: boolean;
+  targets?: number[];
   zone_position?: number;
   zone?: number;
 }
