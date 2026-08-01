@@ -17,14 +17,20 @@ export default function CardView({ card, gameCard, size = "sm", onClick, selecte
   const [hover, setHover] = useState(false);
   const [imgFailed, setImgFailed] = useState(false);
   const [bigFailed, setBigFailed] = useState(false);
-  const h = size === "lg" ? 320 : size === "md" ? 230 : size === "xs" ? 104 : 160;
-  const w = Math.round(h * ASPECT);
+  // A character in play (board minion) uses the raw square art and a square tile;
+  // everything else uses the framed card render (portrait aspect).
+  const isBoardChar = gameCard?.max_health != null;
+  const baseH = size === "lg" ? 320 : size === "md" ? 230 : size === "xs" ? 104 : 160;
+  const h = isBoardChar ? Math.round(baseH * 0.7) : baseH;
+  const w = isBoardChar ? h : Math.round(h * ASPECT);
   const name = gameCard?.name ?? card?.name ?? "";
   const text = gameCard?.text ?? card?.text ?? "";
   const type = gameCard?.type ?? card?.type ?? "";
   const id = gameCard?.id ?? card?.id;
   const attack = gameCard?.atk ?? card?.attack ?? null;
-  const imgUrl = id && !imgFailed ? `/images/cards/${id}.png` : null;
+  const imgUrl = id && !imgFailed
+    ? `${isBoardChar ? "/images/cards_board" : "/images/cards"}/${id}.png`
+    : null;
   const bigUrl = id && !bigFailed ? `/images/cards_big/${id}.png` : null;
   const canAttack = gameCard?.can_attack;
   const keywords = getKeywords(text);
