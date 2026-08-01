@@ -3,6 +3,14 @@ import { useNavigate, useParams } from "react-router-dom";
 import { apiFetch } from "../api/client";
 import type { CardMeta, Deck } from "../api/types";
 import CardView from "../components/CardView";
+import recommendedDecks from "../data/recommended_decks.json";
+
+interface RecommendedDeck {
+  name: string;
+  hero_class: string;
+  card_ids: string[];
+  tips: string;
+}
 
 function ManaCurve({ counts, poolById }: { counts: Record<string, number>; poolById: Record<string, CardMeta> }) {
   const buckets = useMemo(() => {
@@ -52,6 +60,7 @@ export default function DeckBuilder() {
   const [type, setType] = useState("");
   const [rarity, setRarity] = useState("");
   const [errors, setErrors] = useState<string[]>([]);
+  const [activeTip, setActiveTip] = useState<string | null>(null);
 
   useEffect(() => {
     apiFetch<CardMeta[]>(`/cards`).then((all) => setPool(all));
@@ -117,6 +126,13 @@ export default function DeckBuilder() {
     const i = cards.indexOf(cid);
     if (i >= 0) setCards(cards.filter((_, idx) => idx !== i));
   }
+  function loadRecommended(d: RecommendedDeck) {
+    setHeroClass(d.hero_class);
+    setCards(d.card_ids);
+    setName(d.name);
+    setActiveTip(d.tips);
+    setQ(""); setCost(""); setType(""); setRarity("");
+  }
   function validate(): string[] {
     const errs: string[] = [];
     if (cards.length !== 30) errs.push(`Deck has ${cards.length}/30 cards`);
@@ -142,6 +158,32 @@ export default function DeckBuilder() {
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
       <div className="space-y-4">
+        {/* Recommended decks */}
+        <div>
+          <h3 className="mb-2 text-sm font-bold text-amber-400">Recommended decks</h3>
+          <div className="max-h-44 space-y-1 overflow-y-auto">
+            {(recommendedDecks as RecommendedDeck[]).map((d) => (
+              <div key={d.name} className="flex items-center justify-between rounded border border-slate-700 bg-slate-800 px-2 py-1.5">
+                <div>
+                  <div className="text-sm font-semibold">{d.name}</div>
+                  <div className="text-[11px] text-slate-500">{d.hero_class} · {d.card_ids.length} cards</div>
+                </div>
+                <button
+                  className="rounded bg-amber-500 px-2 py-1 text-xs font-bold text-slate-900"
+                  onClick={() => loadRecommended(d)}
+                >
+                  Load
+                </button>
+              </div>
+            ))}
+          </div>
+          {activeTip && (
+            <div className="mt-2 rounded border border-amber-500/50 bg-amber-500/10 p-2 text-xs leading-snug text-amber-200">
+              <span className="font-bold">How to play:</span> {activeTip}
+            </div>
+          )}
+        </div>
+
         <input
           className="w-full rounded border border-slate-600 bg-slate-800 p-2"
           placeholder="Deck name"
