@@ -1,6 +1,8 @@
+import os
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 from sqlalchemy import select
 
 from .config import settings
@@ -49,6 +51,11 @@ app.include_router(cards_router)
 app.include_router(decks_router)
 app.include_router(games_router)
 app.include_router(matches_router)
+
+# Serve private card art from backend/images/ (gitignored — never committed).
+_images_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "images")
+os.makedirs(_images_dir, exist_ok=True)
+app.mount("/images", StaticFiles(directory=_images_dir), name="images")
 
 
 @app.get("/health")
