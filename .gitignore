@@ -30,3 +30,4 @@ images/cards/
 *.sqlite3
 last_update.json
 .worktrees/
+*.tsbuildinfo
