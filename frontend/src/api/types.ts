@@ -33,6 +33,7 @@ export interface GameCard {
   entity_id: number;
   id?: string;
   name?: string;
+  type?: string;
   cost?: number;
   text?: string;
   atk?: number;
