@@ -18,6 +18,23 @@ export default function Play() {
     if (join) setCode(join);
   }, [params]);
 
+  // Once a challenge is created, wait for the joiner — then auto-enter the game.
+  useEffect(() => {
+    if (!createdCode) return;
+    const t = setInterval(async () => {
+      try {
+        const { game_id } = await apiFetch<{ game_id: string | null }>(`/games/challenges/${createdCode}/game`);
+        if (game_id) {
+          clearInterval(t);
+          navigate(`/game/${game_id}`);
+        }
+      } catch {
+        /* keep polling */
+      }
+    }, 2000);
+    return () => clearInterval(t);
+  }, [createdCode, navigate]);
+
   async function vsAI() {
     if (!deckId) return setMsg("Pick a deck first");
     const { game_id } = await apiFetch<{ game_id: string }>("/games/ai", {
