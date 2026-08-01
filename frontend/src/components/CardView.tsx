@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { CardMeta, GameCard } from "../api/types";
+import { getKeywords, KEYWORD_DEFS } from "../data/keywords";
 
 interface CardViewProps {
   card?: CardMeta;
@@ -25,6 +26,7 @@ export default function CardView({ card, gameCard, size = "sm", onClick, selecte
   const imgUrl = id && !imgFailed ? `/images/cards/${id}.png` : null;
   const bigUrl = id && !bigFailed ? `/images/cards_big/${id}.png` : null;
   const canAttack = gameCard?.can_attack;
+  const keywords = getKeywords(text);
 
   // Only a subtle interaction hint — the art itself shows name/cost/stats.
   const ring = selected
@@ -56,29 +58,27 @@ export default function CardView({ card, gameCard, size = "sm", onClick, selecte
         )}
       </Tag>
 
-      {/* Big hi-res popup on hover */}
-      {hover && (bigUrl || text) && (
-        <div className="pointer-events-none absolute bottom-full left-1/2 z-50 mb-3 w-64 -translate-x-1/2">
-          {bigUrl && (
+      {/* Big hi-res popup, always centered in the viewport */}
+      {hover && bigUrl && (
+        <div className="pointer-events-none fixed inset-0 z-50 flex items-center justify-center">
+          <div className="flex items-center gap-6">
             <img
               src={bigUrl}
               alt={name}
-              className="w-full rounded-lg shadow-2xl"
+              className="h-[420px] rounded-lg shadow-2xl"
               onError={() => setBigFailed(true)}
             />
-          )}
-          {text && (
-            <p className="mt-1.5 rounded-lg bg-slate-800/95 p-2 text-xs leading-snug text-slate-200 shadow-xl">
-              {text}
-            </p>
-          )}
-        </div>
-      )}
-
-      {!gameCard && card && card.attack != null && (
-        <div className="mt-1 flex w-full justify-between text-xs text-slate-400">
-          <span>{card.attack}/{card.health}</span>
-          <span>{card.rarity}</span>
+            {keywords.length > 0 && (
+              <div className="max-w-xs space-y-2">
+                {keywords.map((k) => (
+                  <div key={k} className="rounded-lg border border-slate-600 bg-slate-800/95 p-3 shadow-xl">
+                    <div className="text-sm font-bold text-amber-300">{k}</div>
+                    <div className="mt-0.5 text-xs leading-snug text-slate-300">{KEYWORD_DEFS[k]}</div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>
