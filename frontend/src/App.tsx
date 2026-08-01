@@ -24,7 +24,7 @@ export default function App() {
           className="cursor-pointer text-xl font-bold text-amber-400"
           onClick={() => navigate("/")}
         >
-          Deepcards
+          DeepStone
         </h1>
         {user && (
           <div className="flex items-center gap-4 text-sm">

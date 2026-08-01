@@ -1,4 +1,4 @@
-# Deepcards
+# DeepStone
 
 A self-hosted, web-based Hearthstone-style card game. Players register, build decks from the full card library, challenge each other or play against a simple AI, all inside the browser.
 
