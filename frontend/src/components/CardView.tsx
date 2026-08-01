@@ -31,9 +31,11 @@ export default function CardView({ card, gameCard, size = "sm", onClick, selecte
         ? "border-purple-500"
         : "border-slate-600";
 
+  const Tag = onClick ? "button" : "div";
   return (
     <div className="flex flex-col items-center" style={{ width: w }}>
-      <div
+      <Tag
+        type={onClick ? "button" : undefined}
         className={`relative overflow-hidden rounded-lg border-2 bg-gradient-to-b from-slate-700 to-slate-900 ${frame} ${onClick ? "cursor-pointer" : ""}`}
         style={{ width: w, height: h }}
         onClick={onClick}
@@ -59,7 +61,7 @@ export default function CardView({ card, gameCard, size = "sm", onClick, selecte
         <span className="absolute bottom-1 left-7 right-7 truncate text-center text-xs font-semibold text-slate-100">
           {name}
         </span>
-      </div>
+      </Tag>
       {!gameCard && card && card.attack != null && (
         <div className="mt-1 flex w-full justify-between text-xs text-slate-400">
           <span>{card.attack}/{card.health}</span>

@@ -62,7 +62,17 @@ def _hero(hero) -> dict:
 def _hero_power(hp) -> dict | None:
     if hp is None:
         return None
-    return {"entity_id": hp.entity_id, "id": hp.id, "name": hp.data.name, "cost": hp.cost}
+    targets = []
+    if hasattr(hp, "targets") and hp.targets:
+        targets = [t.entity_id for t in hp.targets]
+    return {
+        "entity_id": hp.entity_id,
+        "id": hp.id,
+        "name": hp.data.name,
+        "cost": hp.cost,
+        "targets": targets,
+        "can_play": bool(hp.is_playable()) if hasattr(hp, "is_playable") else False,
+    }
 
 
 def _weapon(w) -> dict | None:
