@@ -8,6 +8,8 @@ const CLASSES = [
   "MAGE", "WARRIOR", "SHAMAN", "ROGUE", "PALADIN", "HUNTER",
   "DRUID", "WARLOCK", "PRIEST", "DEMONHUNTER",
 ];
+const RARITIES = ["FREE", "COMMON", "RARE", "EPIC", "LEGENDARY"];
+const TYPES = ["MINION", "SPELL", "WEAPON"];
 
 export default function DeckBuilder() {
   const { id } = useParams();
@@ -18,6 +20,9 @@ export default function DeckBuilder() {
   const [cards, setCards] = useState<string[]>([]);
   const [pool, setPool] = useState<CardMeta[]>([]);
   const [q, setQ] = useState("");
+  const [cost, setCost] = useState("");
+  const [type, setType] = useState("");
+  const [rarity, setRarity] = useState("");
   const [errors, setErrors] = useState<string[]>([]);
 
   useEffect(() => {
@@ -36,10 +41,19 @@ export default function DeckBuilder() {
     () => pool.filter((c) => c.cardClass === heroClass || c.cardClass === "NEUTRAL"),
     [pool, heroClass]
   );
-  const filtered = useMemo(
-    () => classCards.filter((c) => c.name.toLowerCase().includes(q.toLowerCase())),
-    [classCards, q]
-  );
+  const filtered = useMemo(() => {
+    const ql = q.toLowerCase().trim();
+    return classCards.filter((c) => {
+      if (ql) {
+        const hay = `${c.name} ${c.text ?? ""}`.toLowerCase();
+        if (!hay.includes(ql)) return false;
+      }
+      if (cost !== "" && c.cost !== Number(cost)) return false;
+      if (type && c.type !== type) return false;
+      if (rarity && c.rarity !== rarity) return false;
+      return true;
+    });
+  }, [classCards, q, cost, type, rarity]);
 
   function add(cardId: string) {
     const card = poolById[cardId];
@@ -91,10 +105,43 @@ export default function DeckBuilder() {
         </select>
         <input
           className="w-full rounded border border-slate-600 bg-slate-800 p-2"
-          placeholder="Search cards…"
+          placeholder="Search name or card text… (e.g. 'draw a card')"
           value={q}
           onChange={(e) => setQ(e.target.value)}
         />
+        <div className="flex flex-wrap gap-2 text-sm">
+          <select
+            className="rounded border border-slate-600 bg-slate-800 p-1.5"
+            value={type}
+            onChange={(e) => setType(e.target.value)}
+          >
+            <option value="">All types</option>
+            {TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
+          </select>
+          <select
+            className="rounded border border-slate-600 bg-slate-800 p-1.5"
+            value={cost}
+            onChange={(e) => setCost(e.target.value)}
+          >
+            <option value="">Any cost</option>
+            {Array.from({ length: 11 }, (_, i) => <option key={i} value={i}>{i} mana</option>)}
+          </select>
+          <select
+            className="rounded border border-slate-600 bg-slate-800 p-1.5"
+            value={rarity}
+            onChange={(e) => setRarity(e.target.value)}
+          >
+            <option value="">Any rarity</option>
+            {RARITIES.map((r) => <option key={r} value={r}>{r}</option>)}
+          </select>
+          <button
+            className="rounded border border-slate-600 bg-slate-800 px-2 py-1 text-slate-400 hover:text-slate-200"
+            onClick={() => { setQ(""); setCost(""); setType(""); setRarity(""); }}
+          >
+            Clear
+          </button>
+        </div>
+        <p className="text-xs text-slate-500">Showing {filtered.length} cards</p>
         <div className="grid max-h-96 grid-cols-3 gap-2 overflow-y-auto">
           {filtered.map((c) => (
             <button
