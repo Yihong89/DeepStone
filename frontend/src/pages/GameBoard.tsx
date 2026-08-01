@@ -14,6 +14,7 @@ interface Selection {
 }
 
 function WeaponView({ weapon }: { weapon: GameCard }) {
+  const dur = Math.max(0, (weapon.max_health ?? 0) - (weapon.damage ?? 0));
   return (
     <div className="flex flex-col items-center gap-1">
       <div className="relative h-14 w-14 overflow-hidden rounded-full ring-1 ring-amber-500">
@@ -29,7 +30,7 @@ function WeaponView({ weapon }: { weapon: GameCard }) {
         )}
       </div>
       <span className="text-xs font-bold text-amber-300">
-        {weapon.atk} ⚔ {weapon.max_health ?? 0}
+        {weapon.atk} ⚔ {dur}
       </span>
     </div>
   );

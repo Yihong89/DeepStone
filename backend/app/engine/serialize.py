@@ -103,6 +103,7 @@ def _weapon(w) -> dict | None:
         "text": getattr(w, "description", "") or "",
         "atk": w.atk,
         "max_health": w.max_durability,
+        "damage": w.damage,
     }
 
 
