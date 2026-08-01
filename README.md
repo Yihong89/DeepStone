@@ -56,5 +56,6 @@ docker compose up -d --build
 
 ## Notes
 
-- Card images are **placeholders** by design — Blizzard's card art is copyrighted. A per-card file scheme (`/images/cards/{card_id}.png`) is ready for your own art.
+- Card images are Blizzard's **copyrighted art**, used here **privately** only. They live in `backend/images/` (gitignored via `**/images/`) and are **never committed**. Re-download with `python scripts/download_card_images.py`.
+- A **pre-commit guard** (`.githooks/pre-commit`) refuses any commit that would add a file under an `images/` directory. Enable it in any clone with: `git config core.hooksPath .githooks`.
 - Fireplace's bundled `CardDefs.xml` is stored in git-LFS; `pip install` leaves a stub. `scripts/ensure_fireplace_data.py` downloads the real file (SHA-256 verified).

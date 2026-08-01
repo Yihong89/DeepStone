@@ -1,0 +1,18 @@
+#!/bin/sh
+# Guard: never commit private card art.
+#
+# The card images under backend/images/ are Blizzard's copyrighted property and
+# are used privately (gitignored via **/images/). This hook refuses any commit
+# that would add a file inside an images/ directory, so a broad `git add` can
+# never sweep the art into the public repository again.
+#
+# Enabled with: git config core.hooksPath .githooks
+
+if git diff --cached --name-only --diff-filter=A | grep -E '(^|/)images/' >/dev/null; then
+  echo "ERROR: this commit would add files under an images/ directory (private card art)." >&2
+  echo "Refusing to commit. The art is gitignored via **/images/; do not force-add it." >&2
+  echo "Staged images files:" >&2
+  git diff --cached --name-only --diff-filter=A | grep -E '(^|/)images/' | sed 's/^/  /' >&2
+  exit 1
+fi
+exit 0
