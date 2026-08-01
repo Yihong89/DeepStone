@@ -8,7 +8,7 @@ the player's browser and submits the reply. Bots decide inline.
 import logging
 import threading
 
-from fireplace.actions import Concede, MulliganChoice, PlayHeroPower
+from fireplace.actions import Concede, MulliganChoice
 from fireplace.exceptions import GameOver
 from fireplace.game import Game
 from fireplace.player import Player
@@ -165,7 +165,9 @@ class GameSession:
             elif kind == "hero_power":
                 hp = player.hero.power
                 target = by_id.get(action["target"]) if action.get("target") else None
-                game.main_power(hp, [PlayHeroPower(hp, target)], target)
+                # HeroPower.use() goes through the Activate action, which pays
+                # the mana cost and enforces the once-per-turn limit.
+                hp.use(target)
             elif kind == "concede":
                 game.action_block(player, [Concede()], BlockType.PLAY)
             else:
