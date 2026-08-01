@@ -62,11 +62,11 @@ The Mini keeps a git checkout of this repo and can self-update with one command 
 
 ```bash
 ~/update-deepstone.sh   # on the Mini
-# or from anywhere:
+# or from anywhere (replace <mac-mini-user> and <mac-mini-ip> with your own values):
 ssh <mac-mini-user>@<mac-mini-ip> '~/update-deepstone.sh'
 ```
 
-The script does `git pull --ff-only origin main`, rebuilds `frontend/dist` (bind-mounted), then `docker compose up -d --build`. So the release flow is: merge a PR on GitHub → run the script on the Mini.
+The script does `git pull --ff-only origin main`, rebuilds `frontend/dist` (bind-mounted), then `docker compose up -d --build`. So the release flow is: merge a PR on GitHub → run the script on the Mini. The Mini's real username and IP are kept out of the repo.
 
 ## Card art: layout & replacing images
 
