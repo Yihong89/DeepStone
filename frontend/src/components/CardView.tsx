@@ -5,7 +5,7 @@ import { getKeywords, KEYWORD_DEFS } from "../data/keywords";
 interface CardViewProps {
   card?: CardMeta;
   gameCard?: GameCard;
-  size?: "sm" | "md" | "lg";
+  size?: "xs" | "sm" | "md" | "lg";
   onClick?: () => void;
   selected?: boolean;
 }
@@ -17,7 +17,7 @@ export default function CardView({ card, gameCard, size = "sm", onClick, selecte
   const [hover, setHover] = useState(false);
   const [imgFailed, setImgFailed] = useState(false);
   const [bigFailed, setBigFailed] = useState(false);
-  const h = size === "lg" ? 320 : size === "md" ? 230 : 160;
+  const h = size === "lg" ? 320 : size === "md" ? 230 : size === "xs" ? 104 : 160;
   const w = Math.round(h * ASPECT);
   const name = gameCard?.name ?? card?.name ?? "";
   const text = gameCard?.text ?? card?.text ?? "";
