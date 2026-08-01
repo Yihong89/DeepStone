@@ -28,6 +28,11 @@ export default function App() {
         </h1>
         {user && (
           <div className="flex items-center gap-4 text-sm">
+            <nav className="flex gap-3">
+              <button className="text-slate-300 hover:text-amber-400" onClick={() => navigate("/cards")}>Cards</button>
+              <button className="text-slate-300 hover:text-amber-400" onClick={() => navigate("/decks")}>Decks</button>
+              <button className="text-slate-300 hover:text-amber-400" onClick={() => navigate("/play")}>Play</button>
+            </nav>
             <span className="text-slate-300">{user.username}</span>
             <button className="text-slate-400 hover:text-slate-200" onClick={logout}>
               Log out
