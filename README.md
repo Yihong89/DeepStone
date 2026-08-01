@@ -47,12 +47,9 @@ docker compose up -d --build
 
 ## Roadmap
 
-- Smarter AI + difficulty levels.
-- Newer card sets + rules-engine updates.
-- Matchmaking queue.
-- Real card-art generation + upload UX.
-- Replays / spectate / match logs in admin.
-- Mac Mini deployment (Docker Desktop install + compose).
+See [ROADMAP.md](roadmap.md) for the full plan — AI/difficulty, matchmaking queue,
+newer card sets, replays/spectate, mobile polish, admin match logs, and Mac Mini
+deployment.
 
 ## Notes
 
