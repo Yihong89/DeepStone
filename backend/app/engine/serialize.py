@@ -106,6 +106,20 @@ def _weapon(w) -> dict | None:
     }
 
 
+def _secret(card, hidden: bool) -> dict:
+    """The owner sees their secret; the opponent sees only a hidden marker."""
+    if hidden:
+        return {"entity_id": card.entity_id}
+    return {
+        "entity_id": card.entity_id,
+        "id": card.id,
+        "name": card.data.name,
+        "type": "SECRET",
+        "cost": card.cost,
+        "text": getattr(card, "description", "") or "",
+    }
+
+
 def _player(player, index: int, hidden: bool) -> dict:
     return {
         "index": index,
@@ -115,7 +129,7 @@ def _player(player, index: int, hidden: bool) -> dict:
         "deck_count": len(player.deck),
         "hand": [_hand_card(c, hidden) for c in player.hand],
         "field": [_character(c) for c in player.field],
-        "secrets": [{"entity_id": c.entity_id} for c in player.secrets],
+        "secrets": [_secret(c, hidden) for c in player.secrets],
         "max_mana": player.max_mana,
         "mana": player.mana,
         "playstate": player.playstate.name,
