@@ -1,7 +1,7 @@
 def test_list_cards_all(client):
     resp = client.get("/api/cards")
     assert resp.status_code == 200
-    assert len(resp.json()) == 4
+    assert len(resp.json()) == 16
 
 
 def test_list_cards_filter_class(client):
