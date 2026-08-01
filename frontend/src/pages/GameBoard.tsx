@@ -297,7 +297,11 @@ export default function GameBoard() {
       {/* Player zone */}
       <section className="space-y-2">
         <div className="flex items-center justify-center gap-2">
-          <HeroView hero={hero!} />
+          <HeroView
+            hero={hero!}
+            onClick={() => onMyMinion(hero!)}
+            selected={selection?.source?.entity_id === hero!.entity_id}
+          />
           {me!.weapon && <WeaponView weapon={me!.weapon} />}
           {me!.secrets.map((s) => <CardView key={s.entity_id} gameCard={s} size="xs" />)}
         </div>

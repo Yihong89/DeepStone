@@ -11,14 +11,15 @@ export default function HeroView({ hero, onClick, selected }: Props) {
   const [imgFailed, setImgFailed] = useState(false);
   const hp = (hero.max_health ?? 0) - (hero.damage ?? 0);
   const imgUrl = hero.id && !imgFailed ? `/images/cards_board/${hero.id}.png` : null;
+  const canAttack = hero.can_attack;
   const Tag = onClick ? "button" : "div";
   return (
     <div className="flex flex-col items-center gap-1.5">
       <Tag onClick={onClick} className={`relative block ${onClick ? "cursor-pointer" : ""}`}>
         <div
-          className={`h-28 w-28 overflow-hidden rounded-full ring-2 ${
-            selected ? "ring-amber-400" : "ring-slate-600"
-          } shadow-lg`}
+          className={`h-28 w-28 overflow-hidden rounded-full ring-2 shadow-lg ${
+            selected ? "ring-amber-400" : canAttack ? "ring-amber-500/80" : "ring-slate-600"
+          }`}
         >
           {imgUrl ? (
             <img
