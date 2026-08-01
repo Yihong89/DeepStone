@@ -6,12 +6,19 @@ card art + audio (private), admin panel. See `README.md` for how to run it.
 
 Items are roughly ordered by priority/impact. Checkboxes reflect progress.
 
+## 🎮 3D Battlefield (three.js) — flagship rebuild
+- [ ] **3D battlefield rebuild** — replace the 2D DOM board with a WebGL scene via **three.js** (React Three Fiber for a React-friendly integration).
+- [ ] **3D hero + minion models** — heroes and minions rendered as 3D shapes/models standing on a board plane (using their card/portrait art as textures).
+- [ ] **3D animations** — attack lunges with motion in 3D, hit/impact particle effects, death/fade-out animations, card-play effects, spell projectiles.
+- [ ] **Camera & scene polish** — subtle camera moves on actions, board/table styling, dynamic lighting, hover highlights on 3D units.
+- [ ] **Keep 2D board as fallback** — an accessibility/performance toggle so the current 2D DOM board remains available.
+
 ## Gameplay & AI
 - [ ] **Smarter AI + difficulty levels** (Easy / Medium / Hard) — the current bot is a simple heuristic (play on curve, trade sensibly).
 - [ ] **Matchmaking queue** — a "find game" button that pairs you with a random online opponent (currently PvP is via shareable challenge codes).
 - [ ] **Ranked ladder / MMR** — persistent rating and seasons.
 - [ ] **Replays & spectate** — record match events, replay them, let others watch live.
-- [ ] **More board polish** — floating damage numbers, card-play animations, board glow effects.
+- [ ] **More 2D board polish** — floating damage numbers, card-play animations, board glow effects (short-term, until the 3D board lands).
 - [ ] **More keywords & mechanics** — expand the hover keyword reference as new cards are added.
 
 ## Content
