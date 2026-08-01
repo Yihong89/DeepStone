@@ -52,7 +52,8 @@ def download(item) -> str:
 
 
 def main() -> None:
-    cards_path = sys.argv[1] if len(sys.argv) > 1 else "cards.json"
+    positional = [a for a in sys.argv[1:] if not a.startswith("--")]
+    cards_path = positional[0] if positional else "cards.json"
     cards = json.load(open(cards_path))
     ids = [c["id"] for c in cards]
     if "--tokens" in sys.argv:
