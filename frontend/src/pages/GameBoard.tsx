@@ -91,10 +91,17 @@ export default function GameBoard() {
   }, [gameId, token, connect]);
 
   // In PvP each browser is a different player index — render from my own view.
-  const myIndex = useGame((s) => s.myIndex) ?? 0;
-  const me = state?.players[myIndex];
-  const opp = state?.players[myIndex === 1 ? 0 : 1];
-  const yourTurn = state ? state.current_player === myIndex && !state.ended : false;
+  // Don't assume index 0: wait for the welcome message so the joiner never
+  // briefly renders the challenger's perspective.
+  const myIndex = useGame((s) => s.myIndex);
+  const idx = myIndex ?? 0;
+  const known = myIndex != null;
+  // The snapshot is always serialized as [me, opp] for this client
+  // (serialize.py puts the viewer first, hidden=False). Never index by
+  // the actual game index here — that inverts the view for the joiner (idx=1).
+  const me = state?.players[0];
+  const opp = state?.players[1];
+  const yourTurn = state ? known && state.current_player === idx && !state.ended : false;
   const hero = me?.hero;
   const heroPower = me?.hero_power;
 
@@ -233,7 +240,7 @@ export default function GameBoard() {
     setMulliganToggle(next);
   }
 
-  if (!state) {
+  if (!state || !known) {
     return <p className="p-8 text-center text-slate-400">Connecting to game…</p>;
   }
 
@@ -335,9 +342,9 @@ export default function GameBoard() {
         </div>
       </aside>
 
-      {pending === "choice" && pendingPlayer === myIndex && <ChoiceDialog />}
+      {pending === "choice" && known && pendingPlayer === idx && <ChoiceDialog />}
 
-      {pending === "mulligan" && pendingPlayer === myIndex && (
+      {pending === "mulligan" && known && pendingPlayer === idx && (
         <div className="fixed inset-0 z-20 bg-black/70 p-8">
           <h3 className="text-center text-xl font-bold text-amber-400">
             Mulligan — click cards to swap, or keep all
@@ -370,7 +377,7 @@ export default function GameBoard() {
         <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/80">
           <div className="rounded-xl border border-slate-600 bg-slate-800 p-8 text-center">
             <h2 className="text-3xl font-black">
-              {state.result?.winner === 0 ? "🏆 You win!" : state.result?.winner === 1 ? "You lose" : "Draw"}
+              {state.result?.winner === idx ? "🏆 You win!" : state.result?.winner !== null ? "You lose" : "Draw"}
             </h2>
             <p className="mt-2 text-slate-400">
               {state.result?.playstates?.join(" vs ") ?? "Game over"}

@@ -27,6 +27,23 @@ def test_snapshot_shape():
     assert "hand" in me and "field" in me and "mana" in me and "max_mana" in me
 
 
+def test_joiner_perspective_is_first():
+    """serialize always puts the viewer first — players[0] is the viewer's own
+    side, regardless of the actual game index. The board UI relies on this
+    (it renders players[0] as 'me'), so the joiner (index 1) must also see
+    their own hero/hand first and the challenger hidden."""
+    game = _fresh_game()
+    game.start()
+    me, opp = serialize(game, 1)["players"]
+    assert me["index"] == 1
+    assert opp["index"] == 0
+    assert len(me["hand"]) == len(game.players[1].hand)
+    for card in me["hand"]:
+        assert "name" in card  # viewer's own hand is visible
+    for card in opp["hand"]:
+        assert "name" not in card  # opponent's hand is hidden
+
+
 def test_opponent_hand_is_hidden():
     game = _fresh_game()
     game.start()
