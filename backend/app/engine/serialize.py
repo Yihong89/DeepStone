@@ -2,6 +2,18 @@ from __future__ import annotations
 
 from fireplace.actions import MulliganChoice
 from fireplace.game import Game
+from hearthstone.enums import CardType
+
+
+def _type_name(card) -> str:
+    """Fireplace stores entity type as an int; map it to the enum name."""
+    t = getattr(card, "type", "")
+    if isinstance(t, str):
+        return t
+    try:
+        return CardType(t).name
+    except Exception:
+        return str(t)
 
 
 def _hand_card(card, hidden: bool) -> dict:
@@ -14,6 +26,7 @@ def _hand_card(card, hidden: bool) -> dict:
         "entity_id": card.entity_id,
         "id": card.id,
         "name": card.data.name,
+        "type": _type_name(card),
         "cost": card.cost,
         "text": getattr(card, "description", "") or "",
         "requires_target": bool(card.requires_target()) if hasattr(card, "requires_target") else False,
@@ -29,6 +42,8 @@ def _character(card) -> dict:
         "entity_id": card.entity_id,
         "id": card.id,
         "name": card.data.name,
+        "type": _type_name(card),
+        "text": getattr(card, "description", "") or "",
         "atk": card.atk,
         "max_health": card.max_health,
         "damage": card.damage,
@@ -69,7 +84,9 @@ def _hero_power(hp) -> dict | None:
         "entity_id": hp.entity_id,
         "id": hp.id,
         "name": hp.data.name,
+        "type": "HERO_POWER",
         "cost": hp.cost,
+        "text": getattr(hp, "description", "") or "",
         "targets": targets,
         "can_play": bool(hp.is_playable()) if hasattr(hp, "is_playable") else False,
     }
@@ -82,6 +99,8 @@ def _weapon(w) -> dict | None:
         "entity_id": w.entity_id,
         "id": w.id,
         "name": w.data.name,
+        "type": "WEAPON",
+        "text": getattr(w, "description", "") or "",
         "atk": w.atk,
         "max_health": w.max_durability,
     }
