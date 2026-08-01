@@ -7,6 +7,8 @@ lazily-built card database. Run once at app startup.
 """
 import hashlib
 import pathlib
+import shutil
+import ssl
 import urllib.request
 
 import fireplace.cards as fireplace_cards
@@ -20,11 +22,23 @@ def carddefs_path() -> pathlib.Path:
     return pathlib.Path(fireplace_cards.__file__).parent / "CardDefs.xml"
 
 
+def _ssl_context() -> ssl.SSLContext:
+    # macOS Python often can't find the system root certs; certifi is the
+    # reliable CA bundle.
+    try:
+        import certifi
+
+        return ssl.create_default_context(cafile=certifi.where())
+    except Exception:
+        return ssl.create_default_context()
+
+
 def ensure_carddefs() -> pathlib.Path:
     path = carddefs_path()
     if path.exists() and hashlib.sha256(path.read_bytes()).hexdigest() == LFS_OID:
         return path
-    urllib.request.urlretrieve(LFS_URL, path)
+    with urllib.request.urlopen(LFS_URL, context=_ssl_context()) as resp, open(path, "wb") as out:
+        shutil.copyfileobj(resp, out)
     if hashlib.sha256(path.read_bytes()).hexdigest() != LFS_OID:
         raise SystemExit("SHA-256 mismatch after CardDefs.xml download")
     return path
