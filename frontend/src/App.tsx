@@ -32,6 +32,10 @@ export default function App() {
               <button className="text-slate-300 hover:text-amber-400" onClick={() => navigate("/cards")}>Cards</button>
               <button className="text-slate-300 hover:text-amber-400" onClick={() => navigate("/decks")}>Decks</button>
               <button className="text-slate-300 hover:text-amber-400" onClick={() => navigate("/play")}>Play</button>
+              <button className="text-slate-300 hover:text-amber-400" onClick={() => navigate("/profile")}>Profile</button>
+              {user.role === "admin" && (
+                <button className="text-slate-300 hover:text-amber-400" onClick={() => navigate("/admin")}>Admin</button>
+              )}
             </nav>
             <span className="text-slate-300">{user.username}</span>
             <button className="text-slate-400 hover:text-slate-200" onClick={logout}>
