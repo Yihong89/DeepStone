@@ -28,6 +28,7 @@ class _Challenge:
 class GameManager:
     def __init__(self):
         self._challenges: dict[str, _Challenge] = {}
+        self._game_by_code: dict[str, str] = {}  # challenge code -> game_id once joined
         self._sessions: dict[str, GameSession] = {}
         self._ws: dict[str, dict[int, WebSocket]] = {}
         self._loops: dict[str, asyncio.AbstractEventLoop] = {}
@@ -55,7 +56,11 @@ class GameManager:
             {"name": "Joiner", "hero": _hero_id(hero_class), "deck": card_ids, "is_bot": False},
         )
         self._sessions[game_id] = session
+        self._game_by_code[code] = game_id  # lets the challenger discover the game
         return game_id, ch.user_id, ch.deck_id, ch.hero
+
+    def get_game_id_for_code(self, code: str) -> str | None:
+        return self._game_by_code.get(code)
 
     def create_ai_game(self, user_id, deck_id, hero_class, card_ids, username) -> str:
         game_id = secrets.token_hex(8)

@@ -41,6 +41,12 @@ async def create_challenge(data: DeckIdIn, user: User = Depends(get_current_user
     return {"code": code}
 
 
+@router.get("/challenges/{code}/game")
+async def challenge_game(code: str, user: User = Depends(get_current_user)):
+    """Let the challenger discover the game_id once a joiner has joined."""
+    return {"game_id": manager.get_game_id_for_code(code)}
+
+
 @router.post("/challenges/{code}/join")
 async def join_challenge(code: str, data: DeckIdIn, user: User = Depends(get_current_user),
                          db: AsyncSession = Depends(get_session)):
