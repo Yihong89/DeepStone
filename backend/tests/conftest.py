@@ -1,7 +1,7 @@
 import os
 
 os.environ.setdefault("CARDS_JSON_PATH", "tests/fixtures/cards_fixture.json")
-os.environ.setdefault("DEEPCHARD_DB_URL", "sqlite+aiosqlite:///./test_deepcards.db")
+os.environ.setdefault("DEEPSTONE_DB_URL", "sqlite+aiosqlite:///./test_deepstone.db")
 
 import pytest
 from fastapi.testclient import TestClient
@@ -22,8 +22,8 @@ def load_cards_fixture():
 @pytest.fixture(scope="session", autouse=True)
 def clean_test_db():
     # Ensure each pytest session starts with a fresh database.
-    if os.path.exists("test_deepcards.db"):
-        os.remove("test_deepcards.db")
+    if os.path.exists("test_deepstone.db"):
+        os.remove("test_deepstone.db")
     yield
 
 

@@ -4,15 +4,15 @@ services:
       context: ..
       dockerfile: deploy/backend.Dockerfile
     environment:
-      DEEPCHARD_SECRET: ${DEEPCHARD_SECRET:-change-me-in-production}
-      DEEPCHARD_DB_URL: sqlite+aiosqlite:////data/deepcards.db
-      DEEPCHARD_ADMIN_USER: ${DEEPCHARD_ADMIN_USER:-admin}
-      DEEPCHARD_ADMIN_PASS: ${DEEPCHARD_ADMIN_PASS:-}
+      DEEPSTONE_SECRET: ${DEEPSTONE_SECRET:-change-me-in-production}
+      DEEPSTONE_DB_URL: sqlite+aiosqlite:////data/deepstone.db
+      DEEPSTONE_ADMIN_USER: ${DEEPSTONE_ADMIN_USER:-admin}
+      DEEPSTONE_ADMIN_PASS: ${DEEPSTONE_ADMIN_PASS:-}
       CARDS_JSON_PATH: /srv/backend/cards.json
       FRONTEND_DIST_DIR: /srv/frontend/dist
     volumes:
       # Persistent DB (named volume)
-      - deepcards-data:/data
+      - deepstone-data:/data
       # Private assets + SPA build (gitignored / host-built) — bind mounts so
       # they aren't baked into the image.
       - ../backend/images:/srv/backend/images
@@ -23,4 +23,4 @@ services:
     restart: unless-stopped
 
 volumes:
-  deepcards-data:
+  deepstone-data:

@@ -14,11 +14,11 @@ interface AuthState {
 
 export const useAuth = create<AuthState>((set, get) => ({
   user: null,
-  token: localStorage.getItem("deepcards_token"),
+  token: localStorage.getItem("deepstone_token"),
   ready: false,
   setToken: (t) => {
-    if (t) localStorage.setItem("deepcards_token", t);
-    else localStorage.removeItem("deepcards_token");
+    if (t) localStorage.setItem("deepstone_token", t);
+    else localStorage.removeItem("deepstone_token");
     set({ token: t });
   },
   setUser: (u) => set({ user: u }),
