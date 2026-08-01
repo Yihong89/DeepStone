@@ -14,9 +14,20 @@ interface Selection {
 }
 
 function SecretMarker() {
+  const [hover, setHover] = useState(false);
   return (
-    <div className="flex h-20 w-14 items-center justify-center rounded border-2 border-purple-400 bg-gradient-to-b from-purple-800 to-purple-950 text-2xl font-black text-purple-200 shadow">
-      ?
+    <div className="relative" onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
+      <div className="flex h-20 w-14 items-center justify-center rounded border-2 border-purple-400 bg-gradient-to-b from-purple-800 to-purple-950 text-2xl font-black text-purple-200 shadow">
+        ?
+      </div>
+      {hover && (
+        <div className="pointer-events-none absolute bottom-full left-1/2 z-30 mb-2 w-44 -translate-x-1/2 rounded-lg border border-slate-600 bg-slate-800/95 p-2 shadow-xl">
+          <div className="text-xs font-bold text-amber-300">Secret</div>
+          <div className="mt-0.5 text-[11px] leading-snug text-slate-300">
+            A hidden spell that triggers when its condition is met.
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -71,6 +82,35 @@ export default function GameBoard() {
   useEffect(() => {
     if (logRef.current) logRef.current.scrollTop = logRef.current.scrollHeight;
   }, [log]);
+
+  // Animate minion attacks: attacker lunges toward the target, target flashes.
+  const lastEvent = useGame((s) => s.lastEvent);
+  useEffect(() => {
+    if (!lastEvent || lastEvent.kind !== "attack" || lastEvent.source == null || lastEvent.target == null) return;
+    const attacker = document.querySelector(`[data-eid="${lastEvent.source}"]`);
+    const target = document.querySelector(`[data-eid="${lastEvent.target}"]`);
+    if (!attacker || !target) return;
+    const from = (attacker as HTMLElement).getBoundingClientRect();
+    const to = (target as HTMLElement).getBoundingClientRect();
+    const dx = to.left - from.left;
+    const dy = to.top - from.top;
+    (attacker as HTMLElement).animate(
+      [
+        { transform: "translate(0,0) scale(1)" },
+        { transform: `translate(${dx * 0.7}px, ${dy * 0.7}px) scale(1.15)`, offset: 0.5 },
+        { transform: "translate(0,0) scale(1)" },
+      ],
+      { duration: 450, easing: "ease-in-out" }
+    );
+    (target as HTMLElement).animate(
+      [
+        { boxShadow: "0 0 0 rgba(255,60,60,0)" },
+        { boxShadow: "0 0 24px 8px rgba(255,60,60,0.85)", offset: 0.4 },
+        { boxShadow: "0 0 0 rgba(255,60,60,0)" },
+      ],
+      { duration: 450, easing: "ease-in-out" }
+    );
+  }, [lastEvent]);
 
   function clearSelection() {
     setSelection(null);
@@ -169,6 +209,7 @@ export default function GameBoard() {
             <CardView
               key={m.entity_id}
               gameCard={m}
+              dataEid={m.entity_id}
               onClick={() => onOppCharacter(m)}
               selected={targetIds.has(m.entity_id)}
             />
@@ -208,7 +249,7 @@ export default function GameBoard() {
         </div>
         <div className="flex gap-2">
           {me!.field.map((m) => (
-            <CardView key={m.entity_id} gameCard={m} onClick={() => onMyMinion(m)} />
+            <CardView key={m.entity_id} gameCard={m} dataEid={m.entity_id} onClick={() => onMyMinion(m)} />
           ))}
         </div>
         <div className="flex min-h-[110px] items-end justify-center gap-2 rounded border border-slate-700 bg-slate-800/50 p-2">

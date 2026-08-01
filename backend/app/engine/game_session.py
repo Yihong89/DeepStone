@@ -167,6 +167,7 @@ class GameSession:
                     raise ValueError(f"unknown attack entities {action.get('source')}->{action.get('target')}")
                 game.attack(src, tgt)
                 desc = f"{src.data.name} attacked {tgt.data.name}"
+                self._event({"kind": "attack", "source": src.entity_id, "target": tgt.entity_id})
             elif kind == "hero_power":
                 hp = player.hero.power
                 target = by_id.get(action["target"]) if action.get("target") else None
@@ -201,10 +202,14 @@ class GameSession:
             return self._apply_main_action(player_index, decision)
         return None
 
-    # ---- battle log ----
+    # ---- battle log / events ----
     def _log_message(self, message: str) -> None:
         for i in range(2):
             self._send(i, {"type": "log", "message": message})
+
+    def _event(self, event: dict) -> None:
+        for i in range(2):
+            self._send(i, {"type": "event", "event": event})
 
     def _field_ids(self, game) -> set[int]:
         ids: set[int] = set()

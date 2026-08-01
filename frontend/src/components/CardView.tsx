@@ -8,12 +8,13 @@ interface CardViewProps {
   size?: "xs" | "sm" | "md" | "lg";
   onClick?: () => void;
   selected?: boolean;
+  dataEid?: number;
 }
 
 // Real card art is 256x388 (aspect ~0.66); size the frame to match so nothing is cropped.
 const ASPECT = 256 / 388;
 
-export default function CardView({ card, gameCard, size = "sm", onClick, selected }: CardViewProps) {
+export default function CardView({ card, gameCard, size = "sm", onClick, selected, dataEid }: CardViewProps) {
   const [hover, setHover] = useState(false);
   const [imgFailed, setImgFailed] = useState(false);
   const [bigFailed, setBigFailed] = useState(false);
@@ -53,6 +54,7 @@ export default function CardView({ card, gameCard, size = "sm", onClick, selecte
   return (
     <div
       className="relative flex flex-col items-center"
+      data-eid={dataEid}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       style={{ width: w }}
