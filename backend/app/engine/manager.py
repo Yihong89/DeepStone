@@ -10,6 +10,11 @@ from .game_session import GameSession
 from .heroes import HERO_BY_CLASS
 
 
+def _hero_id(hero_class: str) -> str:
+    """Map a deck's hero class name to the hero card ID Fireplace expects."""
+    return HERO_BY_CLASS.get(hero_class, "HERO_08")
+
+
 class _Challenge:
     def __init__(self, code, user_id, deck_id, hero, card_ids, expires_at):
         self.code = code
@@ -38,7 +43,7 @@ class GameManager:
         )
         return code
 
-    def join_challenge(self, code, user_id, deck_id, hero, card_ids):
+    def join_challenge(self, code, user_id, deck_id, hero_class, card_ids):
         ch = self._challenges.get(code)
         if ch is None or ch.expires_at < time.time():
             raise KeyError("Challenge not found or expired")
@@ -46,19 +51,18 @@ class GameManager:
         game_id = secrets.token_hex(8)
         session = GameSession(
             game_id,
-            {"name": "Challenger", "hero": ch.hero, "deck": ch.card_ids, "is_bot": False},
-            {"name": "Joiner", "hero": hero, "deck": card_ids, "is_bot": False},
+            {"name": "Challenger", "hero": _hero_id(ch.hero), "deck": ch.card_ids, "is_bot": False},
+            {"name": "Joiner", "hero": _hero_id(hero_class), "deck": card_ids, "is_bot": False},
         )
         self._sessions[game_id] = session
         return game_id, ch.user_id, ch.deck_id, ch.hero
 
-    def create_ai_game(self, user_id, deck_id, hero, card_ids, username) -> str:
+    def create_ai_game(self, user_id, deck_id, hero_class, card_ids, username) -> str:
         game_id = secrets.token_hex(8)
-        bot_hero = HERO_BY_CLASS.get(hero, "HERO_08")
         session = GameSession(
             game_id,
-            {"name": username, "hero": hero, "deck": card_ids, "is_bot": False},
-            {"name": "AI", "hero": bot_hero, "deck": build_ai_deck(hero), "is_bot": True},
+            {"name": username, "hero": _hero_id(hero_class), "deck": card_ids, "is_bot": False},
+            {"name": "AI", "hero": _hero_id(hero_class), "deck": build_ai_deck(hero_class), "is_bot": True},
         )
         self._sessions[game_id] = session
         return game_id

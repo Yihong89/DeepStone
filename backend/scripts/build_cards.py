@@ -8,7 +8,7 @@ import sys
 
 from hearthstone.cardxml import load
 
-from ensure_fireplace_data import ensure_carddefs
+from app.engine.fireplace_setup import ensure_carddefs
 
 _DECK_TYPES = {"MINION", "SPELL", "WEAPON"}
 

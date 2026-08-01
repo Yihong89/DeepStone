@@ -6,6 +6,7 @@ from sqlalchemy import select
 from .config import settings
 from .db import SessionLocal, init_db
 from .engine.carddata import load_cards
+from .engine.fireplace_setup import init_engine
 from .models import User
 from .routers.admin import router as admin_router
 from .routers.auth import hash_password, router as auth_router
@@ -35,6 +36,7 @@ async def _bootstrap_admin():
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     load_cards()
+    init_engine()
     await init_db()
     await _bootstrap_admin()
     yield
