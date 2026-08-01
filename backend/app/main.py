@@ -1,7 +1,8 @@
 import os
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
+from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy import select
 
@@ -65,3 +66,29 @@ app.mount("/audio", StaticFiles(directory=_audio_dir), name="audio")
 @app.get("/health")
 async def health():
     return {"status": "ok"}
+
+
+# Serve the built React SPA so the whole app runs on a single port — no nginx.
+# Dist is at <repo>/frontend/dist by default; override for the Docker mount.
+_dist_dir = os.environ.get(
+    "FRONTEND_DIST_DIR",
+    os.path.join(
+        os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
+        "frontend",
+        "dist",
+    ),
+)
+
+
+@app.get("/{full_path:path}", include_in_schema=False)
+async def spa(full_path: str):
+    # Never shadow the API/media mounts (they're registered before this route).
+    if full_path.startswith(("api/", "images/", "audio/")):
+        raise HTTPException(status_code=404)
+    candidate = os.path.normpath(os.path.join(_dist_dir, full_path))
+    if full_path and candidate.startswith(_dist_dir) and os.path.isfile(candidate):
+        return FileResponse(candidate)
+    index = os.path.join(_dist_dir, "index.html")
+    if os.path.isfile(index):
+        return FileResponse(index)
+    raise HTTPException(status_code=404)
