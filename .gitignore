@@ -20,7 +20,7 @@ dist/
 
 # Card data & images
 cards.json
-**/images/cards/
+**/images/
 
 # OS
 .DS_Store
