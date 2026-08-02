@@ -12,6 +12,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from hearthstone.cardxml import load
 
+from app.engine.card_data_sync import sync_current_stats
 from app.engine.fireplace_setup import ensure_carddefs
 
 _DECK_TYPES = {"MINION", "SPELL", "WEAPON"}
@@ -37,6 +38,9 @@ def to_meta(c) -> dict:
 def main() -> None:
     carddefs = ensure_carddefs()
     db, _ = load(path=str(carddefs))
+    # Fireplace's bundled snapshot holds stale balance-patch stats; pull the
+    # current ones from hearthstone_data so the deck-builder matches the board.
+    sync_current_stats(db)
     out = sys.argv[1] if len(sys.argv) > 1 else "cards.json"
     cards = []
     for c in db.values():

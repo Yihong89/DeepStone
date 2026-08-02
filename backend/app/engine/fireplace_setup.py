@@ -13,6 +13,8 @@ import urllib.request
 
 import fireplace.cards as fireplace_cards
 
+from app.engine.card_data_sync import sync_current_stats
+
 # oid/size from the LFS pointer in fireplace/cards/CardDefs.xml (master).
 LFS_OID = "7fccd87b7e20f9864fe0664aa9d9304213981dc6c883fe71010cceda1b9af7ac"
 LFS_URL = "https://media.githubusercontent.com/media/jleclanche/fireplace/master/fireplace/cards/CardDefs.xml"
@@ -48,3 +50,6 @@ def init_engine() -> None:
     ensure_carddefs()
     if not fireplace_cards.db.initialized:
         fireplace_cards.db.initialize()
+    # Fireplace's frozen CardDefs overrides the current hearthstone_data with
+    # stale balance-patch stats; restore the current values for the board.
+    sync_current_stats(fireplace_cards.db)
