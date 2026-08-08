@@ -7,6 +7,7 @@ import HeroView from "../components/HeroView";
 import TargetingOverlay from "../components/TargetingOverlay";
 import { useAuth } from "../store/auth";
 import { useGame } from "../store/game";
+import { resolveTargetAction } from "../lib/targeting";
 
 interface Selection {
   type: "attack" | "play" | "hero_power";
@@ -181,7 +182,15 @@ export default function GameBoard() {
   }
 
   function onMyMinion(card: GameCard) {
-    if (selection) return clearSelection();
+    // Apply a pending targeted play / hero power to a friendly minion (spells
+    // and battlecries can target your own minions), or cancel the selection if
+    // the friendly minion isn't a valid target. Mirrors onOppCharacter.
+    if (selection) {
+      const msg = resolveTargetAction(selection, card, targetIds);
+      if (msg) send(msg);
+      clearSelection();
+      return;
+    }
     if (yourTurn && card.can_attack) {
       setSelection({ type: "attack", source: card });
       setTargets(card.attack_targets ?? []);
@@ -205,18 +214,8 @@ export default function GameBoard() {
 
   function onOppCharacter(card: GameCard) {
     if (!selection) return;
-    if (targetIds.has(card.entity_id)) {
-      if (selection.type === "attack") {
-        send({ type: "action", action: { kind: "attack", source: selection.source.entity_id, target: card.entity_id } });
-      } else if (selection.type === "play") {
-        send({
-          type: "action",
-          action: { kind: "play_card", card: selection.source.entity_id, target: card.entity_id, index: 0, choose: null },
-        });
-      } else {
-        send({ type: "action", action: { kind: "hero_power", target: card.entity_id } });
-      }
-    }
+    const msg = resolveTargetAction(selection, card, targetIds);
+    if (msg) send(msg);
     clearSelection();
   }
 
